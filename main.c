@@ -35,5 +35,7 @@ int main()
 	paramString = NULL;
 
 	bool success = ExecuteBuiltinCommand(shell, params);
-	printf("[builtin command not found!]\n[status=1]\n");
+
+	if (!success)
+		printf("[builtin command not found!]\n[status=1]\n");
 }
