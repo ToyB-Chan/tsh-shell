@@ -109,17 +109,44 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(inPipe[0]);
 	close(outPipe[1]);
 
-	pid_t tpid = wait(outStatusCode);
-	assert(pid == tpid);
-	free(argv);
+	FILE* outStream = fdopen(outPipe[0], "r");
+	String* lineBuffer = String_New();
+	bool lineBufferReady = false;
+	while (true)
+	{	
+		usleep(5000);
+		while (true)
+		{
+			int c = fgetc(outPipe[0]);
+			if (c == '\n')
+			{
+				lineBufferReady = true;
+				break;
+			}
+			
+			if (c == EOF)
+				break;
 
+			String_AppendChar(lineBuffer, (char)c);
+		}
 
-	char buffer[1024];
-	int count = read(outPipe[0], buffer, sizeof(buffer) - 1);
-	buffer[count] = '\0';
-	printf("Parent received: %s\n", buffer);
+		if (lineBufferReady)
+		{
+			printf("child: %s\n", String_GetCString(lineBuffer));
+			String_Reset(lineBuffer);
+			lineBufferReady = false;
+		}
 
+		pid_t tpid = waitpid(pid, &outStatusCode, WNOHANG);
+		if (tpid == pid)
+			break;
+	}
+
+	printf("child final: %s\n", String_GetCString(lineBuffer));
+	String_Destroy(lineBuffer);
+	fclose(outStream);
 	close(inPipe[1]);
 	close(outPipe[0]);
+	free(argv);
 	return success;
 }

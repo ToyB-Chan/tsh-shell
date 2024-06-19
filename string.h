@@ -25,6 +25,7 @@ bool String_EqualsCString(String* str, char* cstr);
 bool String_EqualsString(String* str, String* other);
 void String_Destroy(String* str);
 String* String_Join(ListString* strList, char delimiter);
+void String_Reset(String* str);
 
 String* String_Itoa(int x);
 

@@ -8,8 +8,8 @@ String* String_New()
 {
 	String* str = (String*)malloc(sizeof(String));
 	assert(str);
-	str->list = ListChar_New();
-	ListChar_Add(str->list, '\0');
+	str->list = NULL;
+	String_Reset(str);
 	return str;
 }
 
@@ -140,6 +140,15 @@ String* String_Join(ListString* strList, char delimiter)
 
 	String_RemoveAt(str, String_GetLength(str) - 1);
 	return str;
+}
+
+void String_Reset(String* str)
+{
+	if (str->list)
+		ListChar_Destroy(str->list);
+
+	str->list = ListChar_New();
+	ListChar_Add(str->list, '\0');
 }
 
 String* String_Itoa(int x)
