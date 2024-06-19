@@ -84,6 +84,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	{
 		dup2(inPipe[0], STDIN_FILENO);
 		dup2(outPipe[1], STDOUT_FILENO);
+		usleep(5000);
 		printf("child: success is %i, flipping...\n", *success);
 		*success = !*success;
 
