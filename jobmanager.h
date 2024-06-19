@@ -41,4 +41,5 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job);
 JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId);
 
 void JobInfo_Execute(JobInfo* job, ShellInfo* shell);
-String* JobInfo_ToString(JobInfo* job);
+String* JobInfo_ToInfoString(JobInfo* job);
+String* JobInfo_ToShellString(JobInfo* job);

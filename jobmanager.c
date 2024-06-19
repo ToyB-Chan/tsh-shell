@@ -64,11 +64,20 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	{
 		atomic_exchange(&job->state, JS_Running);
 		bool success = ShellInfo_Execute(shell, job->params, &job->statusCode);
+		String* jobStr = JobInfo_ToShellString(job);
 		if (success)
+		{
 			atomic_exchange(&job->state, JS_Finished);
+			printf("[%s an error occured during execution of the command]\n", String_GetCString(jobStr));
+		}
 		else
+		{
+			printf("[%s finished execution]\n", String_GetCString(jobStr));
 			atomic_exchange(&job->state, JS_Faulted);
+		}
 
+		printf("[status=%i]\n", job->statusCode);
+		String_Destroy(jobStr);
 		exit(job->statusCode);
 	}
 	else if (cpid < 0)
@@ -79,7 +88,7 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	job->pid = cpid;
 }
 
-String* JobInfo_ToString(JobInfo* job)
+String* JobInfo_ToInfoString(JobInfo* job)
 {
 	assert(job);
 	String* str = String_New();
@@ -136,5 +145,20 @@ String* JobInfo_ToString(JobInfo* job)
 	temp = String_Join(job->params, ' ');
 	String_AppendString(str, temp);
 	String_Destroy(temp);
+	return str;
+}
+
+String* JobInfo_ToShellString(JobInfo* job)
+{
+	assert(job);
+	String* str = String_New();
+	String* temp = NULL; 
+
+	String_AppendCString(str, "[job: ");
+	temp = String_Itoa(job->id);
+	String_AppendString(str, temp);
+	String_Destroy(temp);
+	String_AppendCString(str, "]");
+
 	return str;
 }
