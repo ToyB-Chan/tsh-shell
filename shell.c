@@ -24,8 +24,9 @@ void ShellInfo_Destroy(ShellInfo* shell)
 
 bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 {
-	FILE* inStream = NULL;
-	FILE* outStream = NULL;
+	FILE* inStream = stdin;
+	FILE* outStream = stdout;
+
 
 
 	/*
@@ -73,22 +74,51 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		argv[i - 1] = String_GetCString(ListString_Get(params, i));
 	}
 
+	int inPipe[2];
+	int outPipe[2];
+	pipe(inPipe);
+	pipe(outPipe);
+
 	bool success = true;
 	pid_t pid = fork();
 	if (pid == 0)
 	{
+		dup2(inPipe[0], STDIN_FILENO);
+		dup2(outPipe[1], STDOUT_FILENO);
+
+		close(inPipe[0]);
+		close(inPipe[1]);
+		close(outPipe[0]);
+		close(outPipe[1]);
+
 		execv(String_GetCString(filePath), argv);
 		success = false;
 		exit(1);
 	}
 	else if (pid < 0)
 	{
+		close(inPipe[0]);
+		close(inPipe[1]);
+		close(outPipe[0]);
+		close(outPipe[1]);
+
 		return false;
 	}
+
+	close(inPipe[0]);
+	close(outPipe[1]);
 
 	pid_t tpid = wait(outStatusCode);
 	assert(pid == tpid);
 	free(argv);
 
+
+	char buffer[1024];
+	int count = read(out_pipe[0], buffer, sizeof(buffer) - 1);
+	buffer[count] = '\0';
+	printf("Parent received: %s", buffer);
+	
+	close(inPipe[1]);
+	close(outPipe[0]);
 	return success;
 }
