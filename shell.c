@@ -3,7 +3,7 @@
 #include "jobmanager.h"
 #include <stdio.h>
 #include <sys/types.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -77,7 +77,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	pid_t pid = fork();
 	if (pid == 0)
 	{
-		execv(filePath, argv);
+		execv(String_GetCString(filePath), argv);
 		success = false;
 		exit(1);
 	}

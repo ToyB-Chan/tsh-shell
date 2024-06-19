@@ -17,6 +17,7 @@
 		"stdatomic.h": "c",
 		"stdio.h": "c",
 		"builtincommands.h": "c",
-		"shell.h": "c"
+		"shell.h": "c",
+		"unistd.h": "c"
 	}
 }
