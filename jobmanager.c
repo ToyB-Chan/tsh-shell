@@ -17,7 +17,7 @@ JobManager* JobManager_New()
 void JobManager_Destroy(JobManager* manager)
 {
 	assert(manager);
-	assert(manager->jobs->numElements = 0);
+	assert(manager->jobs->numElements == 0);
 	ListJobInfo_Destroy(manager->jobs);
 	free(manager);
 }
