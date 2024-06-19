@@ -114,10 +114,10 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 
 
 	char buffer[1024];
-	int count = read(out_pipe[0], buffer, sizeof(buffer) - 1);
+	int count = read(outPipe[0], buffer, sizeof(buffer) - 1);
 	buffer[count] = '\0';
 	printf("Parent received: %s", buffer);
-	
+
 	close(inPipe[1]);
 	close(outPipe[0]);
 	return success;
