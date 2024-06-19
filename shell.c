@@ -12,6 +12,7 @@ ShellInfo* ShellInfo_New()
 	ShellInfo* shell = (ShellInfo*)malloc(sizeof(ShellInfo));
 	shell->directory = String_New();
 	shell->jobManager = JobManager_New();
+	return shell;
 }
 
 void ShellInfo_Destroy(ShellInfo* shell)
