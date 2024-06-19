@@ -17,25 +17,31 @@ void printList(ListInt* list)
 
 int main()
 {
+
 	ShellInfo* shell = ShellInfo_New();
-	printf("tsh> ");
 
-	String* paramString = String_New();
-	while(1)
+	while(true)
 	{
-		int c = getc(stdin);
-		if (c == EOF || c == '\n')
-			break;
+		printf("tsh> ");
 
-		String_AppendChar(paramString, (char)c);
+		String* paramString = String_New();
+		while(1)
+		{
+			int c = getc(stdin);
+			if (c == EOF || c == '\n')
+				break;
+
+			String_AppendChar(paramString, (char)c);
+		}
+
+		ListString* params = String_Split(paramString, ' ');
+		String_Destroy(paramString);
+		paramString = NULL;
+
+		bool success = ExecuteBuiltinCommand(shell, params);
+
+		if (!success)
+			printf("[builtin command not found!]\n[status=1]\n");
 	}
-
-	ListString* params = String_Split(paramString, ' ');
-	String_Destroy(paramString);
-	paramString = NULL;
-
-	bool success = ExecuteBuiltinCommand(shell, params);
-
-	if (!success)
-		printf("[builtin command not found!]\n[status=1]\n");
+	
 }

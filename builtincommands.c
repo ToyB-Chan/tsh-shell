@@ -32,6 +32,7 @@ bool ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 	}
 	else if (String_EqualsCString(cmd, "quit"))
 	{
+		exit(0);
 		return true;
 	}
 	
