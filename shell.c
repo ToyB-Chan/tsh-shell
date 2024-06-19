@@ -80,7 +80,6 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	*success = true;
 
 	pid_t pid = fork();
-	printf("THE PID: %i\n", pid);
 	if (pid == 0)
 	{
 		dup2(inPipe[0], STDIN_FILENO);
@@ -92,6 +91,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(outPipe[1]);
 
 		execv(String_GetCString(filePath), argv);
+		printf("we failed!!!\n");
 		*success = false;
 		exit(1);
 	}
