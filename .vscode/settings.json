@@ -1,0 +1,22 @@
+{
+	"files.associations": {
+		"*.lua": "lua",
+		"*.go": "go",
+		"*.json": "jsonc",
+		"list.h": "c",
+		"stddef.h": "c",
+		"string.h": "c",
+		"list": "c",
+		"array": "c",
+		"string": "c",
+		"string_view": "c",
+		"ranges": "c",
+		"vector": "c",
+		"stdbool.h": "c",
+		"jobmanager.h": "c",
+		"stdatomic.h": "c",
+		"stdio.h": "c",
+		"builtincommands.h": "c",
+		"shell.h": "c"
+	}
+}
