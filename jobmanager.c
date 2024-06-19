@@ -69,11 +69,11 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 		if (success)
 		{
 			atomic_exchange(&job->state, JS_Finished);
-			printf("[%s an error occured during execution of the command]\n", String_GetCString(jobStr));
+			printf("[%s finished execution]\n", String_GetCString(jobStr));
 		}
 		else
 		{
-			printf("[%s finished execution]\n", String_GetCString(jobStr));
+			printf("[%s an error occured during execution of the command]\n", String_GetCString(jobStr));
 			atomic_exchange(&job->state, JS_Faulted);
 		}
 

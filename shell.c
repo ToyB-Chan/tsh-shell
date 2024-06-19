@@ -75,8 +75,12 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	pipe(inPipe);
 	pipe(outPipe);
 
-	bool success = true;
+
+	bool* success = (bool*)malloc(sizeof(bool));
+	*success = true;
+
 	pid_t pid = fork();
+	printf("THE PID: %i\n", pid);
 	if (pid == 0)
 	{
 		dup2(inPipe[0], STDIN_FILENO);
@@ -88,7 +92,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(outPipe[1]);
 
 		execv(String_GetCString(filePath), argv);
-		success = false;
+		*success = false;
 		exit(1);
 	}
 	else if (pid < 0)
@@ -125,5 +129,8 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(inPipe[1]);
 	close(outPipe[0]);
 	free(argv);
-	return success;
+
+	bool successStack = *success;
+	free(success);
+	return successStack;
 }
