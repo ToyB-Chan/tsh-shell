@@ -105,31 +105,15 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(outPipe[1]);
 
 	FILE* outStream = fdopen(outPipe[0], "r");
-	String* lineBuffer = String_New();
-	bool lineBufferReady = false;
 	while (true)
 	{	
 		usleep(5000);
 		while (true)
 		{
 			int c = fgetc(outStream);
-			if (c == '\n')
-			{
-				lineBufferReady = true;
-				break;
-			}
-			
 			if (c == EOF)
 				break;
-
-			String_AppendChar(lineBuffer, (char)c);
-		}
-
-		if (lineBufferReady)
-		{
-			printf("child: %s\n", String_GetCString(lineBuffer));
-			String_Reset(lineBuffer);
-			lineBufferReady = false;
+			putc(c, stdout);
 		}
 
 		pid_t tpid = waitpid(pid, outStatusCode, WNOHANG);
@@ -137,8 +121,6 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			break;
 	}
 
-	printf("child final: %s\n", String_GetCString(lineBuffer));
-	String_Destroy(lineBuffer);
 	fclose(outStream);
 	close(inPipe[1]);
 	close(outPipe[0]);
