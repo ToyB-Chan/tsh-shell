@@ -91,7 +91,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(outPipe[1]);
 
 		execv(String_GetCString(filePath), argv);
-		printf("we failed!!!\n");
+		//printf("we failed!!!\n");
 		*success = false;
 		exit(1);
 	}
