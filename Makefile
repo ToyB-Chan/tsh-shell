@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -std=c11
+CFLAGS = -Wall -std=c11 -ggbd
 
 tsh: builtincommands.c jobmanager.c main.c shell.c string.c
 	$(CC) $(CFLAGS) -o tsh builtincommands.c jobmanager.c main.c shell.c string.c
