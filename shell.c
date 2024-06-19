@@ -25,11 +25,6 @@ void ShellInfo_Destroy(ShellInfo* shell)
 
 bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 {
-	FILE* inStream = stdin;
-	FILE* outStream = stdout;
-
-
-
 	/*
 	for (size_t i = 0; i < params->numElements; i++)
 	{
@@ -117,7 +112,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		usleep(5000);
 		while (true)
 		{
-			int c = fgetc(outPipe[0]);
+			int c = fgetc(outStream);
 			if (c == '\n')
 			{
 				lineBufferReady = true;
@@ -137,7 +132,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			lineBufferReady = false;
 		}
 
-		pid_t tpid = waitpid(pid, &outStatusCode, WNOHANG);
+		pid_t tpid = waitpid(pid, outStatusCode, WNOHANG);
 		if (tpid == pid)
 			break;
 	}
