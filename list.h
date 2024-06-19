@@ -93,7 +93,7 @@ void ListName##_Clear(ListName* list) \
 void ListName##_Insert(ListName* list, ElementType element, size_t index) \
 { \
 	assert(list); \
-	assert(index >= 0 && index < list->numElements); \
+	assert(index >= 0 && index <= list->numElements); \
 	while (list->numElements + 1 > list->capacity) \
 		ListName##_ReserveCapacity(list, list->capacity * 2); \
 \

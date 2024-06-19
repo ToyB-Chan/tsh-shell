@@ -18,7 +18,7 @@ void printList(ListInt* list)
 int main()
 {
 	ShellInfo* shell = ShellInfo_New();
-	puts("tsh> ");
+	printf("tsh> ");
 
 	String* paramString = String_New();
 	while(1)
