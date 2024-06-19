@@ -83,7 +83,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	if (pid == 0)
 	{
 		printf("parent: success is %i, flipping...", *success);
-		*success = !*success
+		*success = !*success;
 		dup2(inPipe[0], STDIN_FILENO);
 		dup2(outPipe[1], STDOUT_FILENO);
 
@@ -108,7 +108,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	}
 
 	printf("parent: success is %i, flipping...", *success);
-	*success = !*success
+	*success = !*success;
 	close(inPipe[0]);
 	close(outPipe[1]);
 
