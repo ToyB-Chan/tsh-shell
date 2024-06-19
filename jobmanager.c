@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "string.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 DEFINE_LIST(ListJobInfo, JobInfo*);
 
