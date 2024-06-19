@@ -64,7 +64,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	String* filePath = ListString_Get(params, 0);
 
 	// we ignore the file path which is always at index 0 but instead (implicitly) add a nullptr to mark the end of our arg values
-	char** argv = (char**)calloc(params->numElements, sizeof(char**)); 
+	char** argv = (char**)calloc(params->numElements, sizeof(char*)); 
 	for (int i = 1; i < params->numElements; i++)
 	{
 		argv[i - 1] = String_GetCString(ListString_Get(params, i));
@@ -82,6 +82,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	pid_t pid = fork();
 	if (pid == 0)
 	{
+		printf("child : 0x%p\n", success);
 		dup2(inPipe[0], STDIN_FILENO);
 		dup2(outPipe[1], STDOUT_FILENO);
 
@@ -105,6 +106,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		return false;
 	}
 
+	printf("parent : 0x%p\n", success);
 	close(inPipe[0]);
 	close(outPipe[1]);
 
