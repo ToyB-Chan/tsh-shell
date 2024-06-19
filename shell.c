@@ -82,7 +82,8 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	pid_t pid = fork();
 	if (pid == 0)
 	{
-		printf("child : 0x%p\n", success);
+		printf("parent: success is %i, flipping...", *success);
+		*success = !*success
 		dup2(inPipe[0], STDIN_FILENO);
 		dup2(outPipe[1], STDOUT_FILENO);
 
@@ -106,7 +107,8 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		return false;
 	}
 
-	printf("parent : 0x%p\n", success);
+	printf("parent: success is %i, flipping...", *success);
+	*success = !*success
 	close(inPipe[0]);
 	close(outPipe[1]);
 
