@@ -84,7 +84,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	{
 		dup2(inPipe[0], STDIN_FILENO);
 		dup2(outPipe[1], STDOUT_FILENO);
-		printf("child: success is %i, flipping...", *success);
+		printf("child: success is %i, flipping...\n", *success);
 		*success = !*success;
 
 		close(inPipe[0]);
@@ -107,7 +107,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		return false;
 	}
 
-	printf("parent: success is %i, flipping...", *success);
+	printf("parent: success is %i, flipping...\n", *success);
 	*success = !*success;
 	close(inPipe[0]);
 	close(outPipe[1]);
