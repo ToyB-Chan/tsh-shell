@@ -9,28 +9,38 @@ bool ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 	assert(params && params->numElements > 0);
 	String* cmd = ListString_Remove(params, 0);
 
+	if (String_EqualsCString(cmd, ""))
+	{
+		return true;
+	}
+
 	if (String_EqualsCString(cmd, "job"))
 	{
 		CommandJob(shell, params);
 		return true;
 	}
-	else if (String_EqualsCString(cmd, "list"))
+	
+	if (String_EqualsCString(cmd, "list"))
 	{
 		return true;
 	}
-	else if (String_EqualsCString(cmd, "info"))
+	
+	if (String_EqualsCString(cmd, "info"))
 	{
 		return true;
 	}
-	else if (String_EqualsCString(cmd, "wait"))
+	
+	if (String_EqualsCString(cmd, "wait"))
 	{
 		return true;
 	}
-	else if (String_EqualsCString(cmd, "kill"))
+	
+	if (String_EqualsCString(cmd, "kill"))
 	{
 		return true;
 	}
-	else if (String_EqualsCString(cmd, "quit"))
+	 
+	if (String_EqualsCString(cmd, "quit"))
 	{
 		exit(0);
 		return true;
