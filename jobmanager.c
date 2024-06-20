@@ -87,12 +87,9 @@ void JobManager_Tick(JobManager* manager)
 
 		while(1)
 		{
-			int c;
+			char c;
 			int bytesRead = read(job->outPipe[0], &c, 1);
 			if (bytesRead != 1)
-				break;
-
-			if (c == EOF)
 				break;
 
 			if (c == '\n')
@@ -139,7 +136,7 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 
 	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
 	assert(flags >= 0);
-	int ret = fcntl(job->outPipe[0], F_SETFL, O_NONBLOCK);
+	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
 	assert(ret >= 0);
 
 	job->inBuffer = String_New();
