@@ -65,6 +65,7 @@ void CommandJob(ShellInfo* shell, ListString* params)
 
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
 	JobInfo_Execute(job, shell);
+	printf("[created job with id %i]\n", job->id);
 	PRINT_SUCCESS();
 }
 
