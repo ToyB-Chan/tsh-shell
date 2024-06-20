@@ -15,6 +15,7 @@ ShellInfo* ShellInfo_New()
 	shell->directory = String_New();
 	shell->jobManager = JobManager_New();
 	shell->inputBuffer = String_New();
+	shell->waitForJob = 0;
 
 	char* buffer = NULL;
 	size_t bufferSize = 1024;

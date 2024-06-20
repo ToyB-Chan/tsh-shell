@@ -133,6 +133,9 @@ void CommandWait(ShellInfo* shell, ListString* params)
 
 	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
 	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
+
+	shell->waitForJob = job;
+	PRINT_SUCCESS();
 }
 
 void CommandKill(ShellInfo* shell, ListString* params)
@@ -147,11 +150,18 @@ void CommandKill(ShellInfo* shell, ListString* params)
 
 	job->status = JS_Killed;
 	kill(job->pid, SIGKILL);
+	PRINT_SUCCESS();
 }
 
 void CommandQuit(ShellInfo* shell, ListString* params)
 {
-	assert(shell);
+	for (size_t i = 0; i < shell->jobManager->jobs; i++)
+	{
+		JobInfo* job = (shell->jobManager, i);
+		job->status = JS_Killed;
+		KILL(job, SIGKILL);
+	}
+
 	exit(0);
 }
 

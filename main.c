@@ -32,58 +32,71 @@ int main()
 		printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
 		JobManager_Tick(shell->jobManager);		
 
-		bool cmdReady = false;
-		while(1)
+		if (shell->waitForJob == NULL)
 		{
-			int c = getc(stdin);
-			if (c == EOF)
-				break;
-
-			if (c == '\n')
+			bool cmdReady = false;
+			while(1)
 			{
-				cmdReady = true;
-				printf("\033[A"); // go one line up again
-				break;
+				int c = getc(stdin);
+				if (c == EOF)
+					break;
+
+				if (c == '\n')
+				{
+					cmdReady = true;
+					printf("\033[A"); // go one line up again
+					break;
+				}
+
+				// ascii backspace or acsii delete
+				if (c == 8 || c == 127)
+				{
+					if (String_GetLength(shell->inputBuffer) > 0)
+						String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
+					continue;
+				}
+
+				String_AppendChar(shell->inputBuffer, (char)c);
 			}
 
-			// ascii backspace or acsii delete
-			if (c == 8 || c == 127)
+			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+			fflush(stdout);
+
+			if (cmdReady)
 			{
-				if (String_GetLength(shell->inputBuffer) > 0)
-					String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
-				continue;
-			}
+				printf("\n");
+				ListString* params = String_Split(shell->inputBuffer, ' ');
+				String_Reset(shell->inputBuffer);
 
-			String_AppendChar(shell->inputBuffer, (char)c);
-		}
+				bool success = ExecuteBuiltinCommand(shell, params);
 
-		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-		fflush(stdout);
+				if (success)
+				{
+					for (size_t i = 0; i < params->numElements; i++)
+						String_Destroy(ListString_Get(params, i));
+					ListString_Destroy(params);
+					continue;
+				}
 
-		usleep(15000);
+				//ExecuteFile(shell, params);
 
-		if (cmdReady)
-		{
-			printf("\n");
-			ListString* params = String_Split(shell->inputBuffer, ' ');
-			String_Reset(shell->inputBuffer);
-
-			bool success = ExecuteBuiltinCommand(shell, params);
-
-			if (success)
-			{
 				for (size_t i = 0; i < params->numElements; i++)
 					String_Destroy(ListString_Get(params, i));
 				ListString_Destroy(params);
-				continue;
 			}
-
-			//ExecuteFile(shell, params);
-
-			for (size_t i = 0; i < params->numElements; i++)
-				String_Destroy(ListString_Get(params, i));
-			ListString_Destroy(params);
 		}
+		else
+		{
+			int status = 0;
+			pid_t tpid = waitpid(shell->waitForJob->pid, &status, WNOHANG);
+			if (tpid == shell->waitForJob->pid)
+			{
+				shell->waitForJob = NULL
+				PRINT_SUCCESS();
+			}
+		}
+
+		usleep(15000);
 	}
 	
 }

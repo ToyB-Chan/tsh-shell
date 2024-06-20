@@ -18,6 +18,8 @@ typedef struct ShellInfo
 	String* directory;
 	JobManager* jobManager;
 	String* inputBuffer;
+
+	JobInfo* waitForJob;
 } ShellInfo;
 
 
