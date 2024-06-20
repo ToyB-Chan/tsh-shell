@@ -136,7 +136,7 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	assert(job->status == JS_Pending);
 
 	assert(pipe(job->inPipe) == 0);
-	assert(pipe2(job->outPipe, O_NONBLOCK) == 0);
+	assert(pipe(job->outPipe) == 0);
 
 	job->inBuffer = String_New();
 	job->outBuffer = String_New();
