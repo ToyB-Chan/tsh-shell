@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	{
 		printf("No Argument given, defauling to 3 seconds\n");	
 	}
-	else if (!SafeAtoi(seconds, &seconds))
+	else if (!SafeAtoi(argv[1], &seconds))
 	{
 		printf("Invalid argument given, exiting...\n");
 		return 1;
