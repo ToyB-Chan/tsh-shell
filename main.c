@@ -88,9 +88,7 @@ int main()
 		}
 		else
 		{
-			int status = 0;
-			pid_t tpid = waitpid(shell->waitForJob->pid, &status, WNOHANG);
-			if (tpid == shell->waitForJob->pid)
+			if (shell->waitForJob->status >= JS_Finished)
 			{
 				shell->waitForJob = NULL;
 				PRINT_SUCCESS();
