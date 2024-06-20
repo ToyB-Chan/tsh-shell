@@ -115,7 +115,8 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			putc(c, stdout);
 		}
 
-		pid_t tpid = waitpid(pid, outStatusCode, WNOHANG);
+		int status = 0;
+		pid_t tpid = waitpid(pid, &status, WNOHANG);
 		if (tpid == pid)
 			break;
 	}
@@ -125,5 +126,6 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(outPipe[0]);
 	free(argv);
 
+	*outStatusCode = WEXITSTATUS(status);
 	return *outStatusCode != STATUS_CODE_COMMAND_NOT_FOUND;
 }
