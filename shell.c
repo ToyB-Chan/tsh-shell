@@ -127,6 +127,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 	printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
 	JobManager_Tick(shell->jobManager, shell);		
 
+	// only handle promt and input if we are not currently waiting for a job
 	if (shell->waitForJob == NULL)
 	{
 		bool cmdReady = false;
@@ -143,7 +144,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 				break;
 			}
 
-			// ascii backspace or acsii delete
+			// handle ascii backspace and acsii delete
 			if (c == 8 || c == 127)
 			{
 				if (String_GetLength(shell->inputBuffer) > 0)
@@ -154,6 +155,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 			String_AppendChar(shell->inputBuffer, (char)c);
 		}
 
+		// only show promt if no foreground job is running (we might still handle input so we can redirect it)
 		if (shell->foregroundJob == NULL)
 		{
 			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
@@ -190,13 +192,11 @@ void ShellInfo_Tick(ShellInfo* shell)
 			shell->jobManager->nextJobId--;
 		}
 	}
-	else
+	else if (shell->waitForJob->status >= JS_Finished)
 	{
-		if (shell->waitForJob->status >= JS_Finished)
-		{
-			shell->waitForJob = NULL;
-			printf("[waiting finished]\n");
-			PRINT_SUCCESS();
-		}
+		
+		shell->waitForJob = NULL;
+		printf("[waiting finished]\n");
+		PRINT_SUCCESS();
 	}
 }
