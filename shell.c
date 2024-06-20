@@ -108,6 +108,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			argv[i] = String_GetCString(ListString_Get(params, i));
 		}
 
+		chdir(String_GetCString(shell->directory));
 		execvp(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
@@ -183,7 +184,7 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 	String* pathEnvStr = String_New();
 	String_AppendCString(pathEnvStr, pathEnv);
 	ListString* pathEnvList = String_Split(pathEnvStr, ':');
-	
+
 	String_Destroy(pathEnvStr);
 	pathEnvStr = NULL;
 
