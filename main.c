@@ -16,6 +16,7 @@ int main()
 	int ret = fcntl(STDERR_FILENO, F_SETFL, flags | O_NONBLOCK);
 	assert(ret >= 0);
 
+	printf("\033[F"); // up one line
 	while(true)
 	{
 		usleep(50000);
@@ -36,11 +37,12 @@ int main()
 
 			String_AppendChar(shell->inputBuffer, (char)c);
 
-			printf("\033[F"); // up one line
     		printf("\033[K"); // clear line (effectively removing the shell prompt)
-			printf("tsh@%s> %s\n", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
 			fflush(stdout);
 		}
+
+		printf("\n");
 
 		if (cmdReady)
 		{
