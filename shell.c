@@ -122,7 +122,6 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	fclose(outStream);
 	close(inPipe[1]);
 	close(outPipe[0]);
-	free(argv);
 
 	*outStatusCode = WEXITSTATUS(status);
 	return *outStatusCode != EXIT_STATUS_COMMAND_NOT_FOUND;
