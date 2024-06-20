@@ -183,8 +183,8 @@ void CommandCd(ShellInfo* shell, ListString* params)
 
 	ListString_Destroy(pathParts);
 
-	if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) != '/')
-		String_AppendChar(newPath, '/');
+	if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
+		String_RemoveAt(newPath, String_GetLength(newPath) - 1);
 
 	if (!ShellInfo_IsDirectory(shell, newPath))
 	{

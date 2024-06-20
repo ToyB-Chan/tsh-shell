@@ -33,7 +33,6 @@ ShellInfo* ShellInfo_New()
 	}
 
 	String_AppendCString(shell->directory, buffer);
-	String_AppendChar(shell->directory, '/');
 	free(buffer);
 	return shell;
 }
