@@ -104,6 +104,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(outPipe[1]);
 
 	FILE* outStream = fdopen(outPipe[0], "r");
+	int status = 0;
 	while (true)
 	{	
 		usleep(5000);
@@ -115,7 +116,6 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			putc(c, stdout);
 		}
 
-		int status = 0;
 		pid_t tpid = waitpid(pid, &status, WNOHANG);
 		if (tpid == pid)
 			break;
