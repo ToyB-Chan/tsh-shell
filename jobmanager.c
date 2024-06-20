@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 DEFINE_LIST(ListJobInfo, JobInfo*);
 
@@ -89,8 +90,7 @@ void JobManager_Tick(JobManager* manager)
 			int c;
 			int bytesRead = read(job->outPipe[0], &c, 1);
 			if (bytesRead != 1)
-			printf("Oh OH: %i", job->outPipe[0]);
-				break;
+				printf("oh oh: %i", errno)
 
 			if (c == EOF)
 				break;
