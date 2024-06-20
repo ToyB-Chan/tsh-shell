@@ -157,7 +157,7 @@ void CommandQuit(ShellInfo* shell, ListString* params)
 {
 	for (size_t i = 0; i < shell->jobManager->jobs->numElements; i++)
 	{
-		JobInfo* job = (shell->jobManager->jobs, i);
+		JobInfo* job = ListJobInfo_Get(shell->jobManager->jobs, i);
 		job->status = JS_Killed;
 		KILL(job->pid, SIGKILL);
 	}

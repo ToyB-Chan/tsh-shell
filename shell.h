@@ -12,6 +12,7 @@
 typedef struct String String;
 typedef struct ListString ListString;
 typedef struct JobManager JobManager;
+typedef struct JobInfo JobInfo;
 
 typedef struct ShellInfo
 {
