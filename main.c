@@ -29,6 +29,8 @@ int main()
 
 	while(true)
 	{
+		printf("\033[F"); // up one line
+		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
 		JobManager_Tick(shell->jobManager);		
 
 		bool cmdReady = false;
@@ -47,12 +49,11 @@ int main()
 			String_AppendChar(shell->inputBuffer, (char)c);
 		}
 
-		printf("\033[F"); // up one line
-		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
 		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
 		fflush(stdout);
 
 		usleep(5000);
+		
 		printf("\n");
 		fflush(stdout);
 
