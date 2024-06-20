@@ -23,18 +23,22 @@ int main()
     ret = tcgetattr(STDIN_FILENO, &term);
     assert(ret == 0);
     
-    term.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+    term.c_lflag &= ~(ICANON); // Disable canonical mode and echo
     ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
     assert(ret == 0);
 
 	while(true)
 	{
-		usleep(50000);
+		usleep(5000);
 		JobManager_Tick(shell->jobManager);		
 
 		bool cmdReady = false;
 
 		printf("\033[F"); // up one line
+		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
+		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+		fflush(stdout);
+
 		while(1)
 		{
 			int c = getc(stdin);
@@ -48,12 +52,11 @@ int main()
 			}
 
 			String_AppendChar(shell->inputBuffer, (char)c);
-    		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
-			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-			fflush(stdout);
+
 		}
 
 		printf("\n");
+		fflush(stdout);
 
 		if (cmdReady)
 		{
