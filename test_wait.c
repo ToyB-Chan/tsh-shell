@@ -13,13 +13,12 @@ bool SafeAtoi(const char* str, int* outInt)
 	return true;
 }
 
-
 int main(int argc, char** argv)
 {	
 	int seconds = 3;
 	if(argc < 2)
 	{
-		printf("No Argument given, defauling to 3 seconds\n");	
+		printf("No Argument given, defauling to 3 seconds\n");
 	}
 	else if (!SafeAtoi(argv[1], &seconds))
 	{
@@ -28,12 +27,15 @@ int main(int argc, char** argv)
 	}
 
 	printf("I'll wait for %i seconds!\n", seconds);
+	fflush(stdout);
 	for (int i = 0; i < seconds; i++)
 	{
 		sleep(1);
 		printf("Sleeping since %i seconds\n", i + 1);
+		fflush(stdout);
 	}
 
 	printf("Done!\n");
+	fflush(stdout);
 	return 0;
 }
