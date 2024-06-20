@@ -183,6 +183,9 @@ void CommandCd(ShellInfo* shell, ListString* params)
 
 	ListString_Destroy(pathParts);
 
+	if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) != '/')
+		String_AppendChar(newPath, '/');
+
 	if (!ShellInfo_IsDirectory(shell, newPath))
 	{
 		CHECK_PRINT_ERROR(false, "directory does not exist");
