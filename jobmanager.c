@@ -231,7 +231,7 @@ String* JobInfo_ToInfoString(JobInfo* job)
 	}
 
 	String_AppendChar(str, '\t');
-	String_AppendCString(str, "status=");
+	String_AppendCString(str, "status=\t");
 
 	temp = String_Itoa(JobInfo_GetExitCode(job));
 	String_AppendString(str, temp);
