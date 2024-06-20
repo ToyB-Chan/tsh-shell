@@ -10,7 +10,7 @@ int main()
 
 	while(true)
 	{
-		printf("tsh> ");
+		printf("tsh@%s> ", String_GetCString(shell->directory));
 
 		String* paramString = String_New();
 		while(1)
