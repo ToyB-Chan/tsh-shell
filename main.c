@@ -42,6 +42,7 @@ int main()
 			if (c == '\n')
 			{
 				cmdReady = true;
+				printf("\033[A"); // go one line up again
 				break;
 			}
 
@@ -63,6 +64,7 @@ int main()
 
 		if (cmdReady)
 		{
+			printf("\n");
 			ListString* params = String_Split(shell->inputBuffer, ' ');
 			String_Reset(shell->inputBuffer);
 
