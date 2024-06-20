@@ -120,3 +120,14 @@ void CommandQuit(ShellInfo* shell, ListString* params)
 	assert(shell);
 	exit(0);
 }
+
+void ExecuteFile(ShellInfo* shell, ListString* params)
+{
+	String* path = ListString_Get(params, 0);
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, path), "executable does not exist",);
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, path), "file is not an executable",);
+
+	int statusCode = 0;
+	ShellInfo_Execute(shell, params, &statusCode);
+	printf("[status=%i]\n", statusCode);
+}

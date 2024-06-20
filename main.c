@@ -4,20 +4,8 @@
 #include "shell.h"
 #include "builtincommands.h"
 
-DECLARE_LIST(ListInt, int);
-DEFINE_LIST(ListInt, int);
-
-void printList(ListInt* list)
-{
-	printf("list start\n");
-	for (int i = 0; i < list->numElements; i++)
-		printf("index: %i, value: %i\n", i, ListInt_Get(list, i));
-	printf("list end\n");
-}
-
 int main()
 {
-
 	ShellInfo* shell = ShellInfo_New();
 
 	while(true)
@@ -40,8 +28,10 @@ int main()
 
 		bool success = ExecuteBuiltinCommand(shell, params);
 
-		if (!success)
-			printf("[invalid command '%s'!]\n[status=%i]\n", String_GetCString(ListString_Get(params, 0)), EXIT_STATUS_COMMAND_NOT_FOUND);
+		if (success)
+			continue;
+
+		ExecuteFile(shell, params);
 	}
 	
 }
