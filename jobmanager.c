@@ -171,14 +171,13 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 		job->status = JS_Faulted;
 	}
 
-	close(job->inPipe[0]);
-	close(job->outPipe[1]);
-
-	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
 	assert(flags >= 0);
-	int ret = fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
 	assert(ret >= 0);
 
+	close(job->inPipe[0]);
+	close(job->outPipe[1]);
 
 	job->pid = cpid;
 	job->status = JS_Running;
