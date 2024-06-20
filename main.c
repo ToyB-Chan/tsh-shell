@@ -27,8 +27,6 @@ int main()
     ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
     assert(ret == 0);
 
-	printf("\n");
-
 	while(true)
 	{
 		printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
@@ -65,6 +63,7 @@ int main()
 
 		if (cmdReady)
 		{
+			printf("\n");
 			ListString* params = String_Split(shell->inputBuffer, ' ');
 			String_Reset(shell->inputBuffer);
 
