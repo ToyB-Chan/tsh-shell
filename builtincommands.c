@@ -175,7 +175,7 @@ void CommandCd(ShellInfo* shell, ListString* params)
 			continue;
 		}
 
-		if (!String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
+		if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) != '/')
 			String_AppendChar(newPath, '/');
 		
 		String_AppendCString(newPath, String_GetCString(ListString_Get(pathParts, i)));
