@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 bool SafeAtoi(const char* str, int* outInt)
 {
