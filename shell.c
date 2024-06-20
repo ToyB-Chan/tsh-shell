@@ -182,7 +182,9 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 
 	String* pathEnvStr = String_New();
 	String_AppendCString(pathEnvStr, pathEnv);
+	printf("a\n");
 	free(pathEnv);
+	printf("b\n");
 	pathEnv = NULL;
 
 	ListString* pathEnvList = String_Split(pathEnvStr, ':');
