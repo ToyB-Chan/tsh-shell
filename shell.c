@@ -1,6 +1,7 @@
 #include "shell.h"
 #include "string.h"
 #include "jobmanager.h"
+#include "builtincommands.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -119,4 +120,83 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 
 	String_Destroy(realPath);
 	return String_Copy(path);
+}
+
+void ShellInfo_Tick(ShellInfo* shell)
+{
+			printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
+		JobManager_Tick(shell->jobManager, shell);		
+
+		if (shell->waitForJob == NULL)
+		{
+			bool cmdReady = false;
+			while(1)
+			{
+				int c = getc(stdin);
+				if (c == EOF)
+					break;
+
+				if (c == '\n')
+				{
+					cmdReady = true;
+					printf("\033[A"); // go one line up again
+					break;
+				}
+
+				// ascii backspace or acsii delete
+				if (c == 8 || c == 127)
+				{
+					if (String_GetLength(shell->inputBuffer) > 0)
+						String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
+					continue;
+				}
+
+				String_AppendChar(shell->inputBuffer, (char)c);
+			}
+
+			if (shell->foregroundJob == NULL)
+			{
+				printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+				fflush(stdout);
+
+				if (cmdReady)
+				{
+					printf("\n");
+					ListString* params = String_Split(shell->inputBuffer, ' ');
+					String_Reset(shell->inputBuffer);
+
+					bool success = ExecuteBuiltinCommand(shell, params);
+
+					if (success)
+					{
+						for (size_t i = 0; i < params->numElements; i++)
+							String_Destroy(ListString_Get(params, i));
+						ListString_Destroy(params);
+						continue;
+					}
+
+					ExecuteFile(shell, params);
+
+					for (size_t i = 0; i < params->numElements; i++)
+						String_Destroy(ListString_Get(params, i));
+					ListString_Destroy(params);
+				}
+			}
+			else if (shell->foregroundJob->status >= JS_Finished)
+			{
+				assert(shell->jobManager->nextJobId == shell->foregroundJob->id + 1);
+				JobManager_DestroyJob(shell->jobManager, shell->foregroundJob);
+				shell->foregroundJob = NULL;
+				shell->jobManager->nextJobId--;
+			}
+		}
+		else
+		{
+			if (shell->waitForJob->status >= JS_Finished)
+			{
+				shell->waitForJob = NULL;
+				printf("[waiting finished]\n");
+				PRINT_SUCCESS();
+			}
+		}
 }
