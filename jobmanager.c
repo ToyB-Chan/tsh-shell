@@ -146,10 +146,10 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 		dup2(job->inPipe[0], STDIN_FILENO);
 		dup2(job->outPipe[1], STDOUT_FILENO);
 
-		close(job->inPipe[0]);
-		close(job->inPipe[1]);
-		close(job->outPipe[0]);
-		close(job->outPipe[1]);
+		//close(job->inPipe[0]);
+		//close(job->inPipe[1]);
+		//close(job->outPipe[0]);
+		//close(job->outPipe[1]);
 
 		String* filePath = ListString_Get(job->params, 0);
 
