@@ -231,8 +231,9 @@ String* JobInfo_ToInfoString(JobInfo* job)
 
 	String_AppendCString(str, "): ");
 
-/*
+
 	temp = String_Join(job->params, ' ');
+	/*
 	String_AppendString(str, temp);
 	String_Destroy(temp);
 	*/
