@@ -27,12 +27,11 @@ int main()
     ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
     assert(ret == 0);
 
-	printf("tsh@%s> ", String_GetCString(shell->directory));
-	fflush(stdout);
+	printf("\n");
 
 	while(true)
 	{
-		usleep(5000);
+		printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
 		JobManager_Tick(shell->jobManager);		
 
 		bool cmdReady = false;
@@ -48,8 +47,19 @@ int main()
 				break;
 			}
 
+			if (c == '\b')
+			{
+				String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
+				continue;
+			}
+
 			String_AppendChar(shell->inputBuffer, (char)c);
 		}
+
+		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+		fflush(stdout);
+
+		usleep(5000);
 
 		if (cmdReady)
 		{
@@ -66,9 +76,6 @@ int main()
 
 			//ExecuteFile(shell, params);
 			ListString_Destroy(params);
-
-			printf("tsh@%s> ", String_GetCString(shell->directory));
-			fflush(stdout);
 		}
 	}
 	
