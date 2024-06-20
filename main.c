@@ -13,7 +13,7 @@ int main()
 
 	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
 	assert(flags >= 0);
-	int ret = fcntl(STDERR_FILENO, F_SETFL, flags | O_NONBLOCK);
+	int ret = fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
 	assert(ret >= 0);
 
 	while(true)
