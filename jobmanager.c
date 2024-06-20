@@ -85,7 +85,7 @@ void JobManager_Tick(JobManager* manager)
 			continue;
 
 		FILE* pipeOutStream = fdopen(job->outPipe[0], "r");
-		assert(pipeOutStream);
+		//assert(pipeOutStream);
 
 		while(1)
 		{
