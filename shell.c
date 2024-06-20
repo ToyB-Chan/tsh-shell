@@ -125,5 +125,5 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(outPipe[0]);
 	free(argv);
 
-	return outStatusCode != STATUS_CODE_COMMAND_NOT_FOUND;
+	return *outStatusCode != STATUS_CODE_COMMAND_NOT_FOUND;
 }
