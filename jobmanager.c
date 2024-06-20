@@ -123,7 +123,9 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 				job->status = JS_Finished;
 
 			JobInfo_Cleanup(job);
-			printf("[job %li has finished executing]\n[status=%i]\n", job->id, JobInfo_GetExitCode(job));
+
+			if (job != shell->foregroundJob)
+				printf("[job %li has finished executing]\n[status=%i]\n", job->id, JobInfo_GetExitCode(job));
 		}
 	}
 	
