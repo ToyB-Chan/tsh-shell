@@ -27,6 +27,8 @@ int main()
     ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
     assert(ret == 0);
 
+	printf("\n");
+
 	while(true)
 	{
 		printf("\033[F"); // up one line
@@ -53,7 +55,7 @@ int main()
 		fflush(stdout);
 
 		usleep(5000);
-		
+
 		printf("\n");
 		fflush(stdout);
 
