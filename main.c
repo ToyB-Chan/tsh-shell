@@ -31,7 +31,6 @@ int main()
 
 	while(true)
 	{
-		printf("\033[F"); // up one line
 		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
 		JobManager_Tick(shell->jobManager);		
 
@@ -56,11 +55,9 @@ int main()
 
 		usleep(5000);
 
-		printf("\n");
-		fflush(stdout);
-
 		if (cmdReady)
 		{
+			printf("\n");
 			ListString* params = String_Split(shell->inputBuffer, ' ');
 			String_Reset(shell->inputBuffer);
 
