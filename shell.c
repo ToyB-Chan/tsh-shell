@@ -61,15 +61,6 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	}
 	*/
 
-	String* filePath = ListString_Get(params, 0);
-
-	// we ignore the file path which is always at index 0 but instead (implicitly) add a nullptr to mark the end of our arg values
-	char** argv = (char**)calloc(params->numElements, sizeof(char*)); 
-	for (int i = 1; i < params->numElements; i++)
-	{
-		argv[i - 1] = String_GetCString(ListString_Get(params, i));
-	}
-
 	int inPipe[2];
 	int outPipe[2];
 	pipe(inPipe);
@@ -86,7 +77,16 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(outPipe[0]);
 		close(outPipe[1]);
 
-		execv(String_GetCString(filePath), argv);
+		String* filePath = ListString_Get(params, 0);
+
+		// we ignore the file path which is always at index 0 but instead (implicitly) add a nullptr to mark the end of our arg values
+		char** argv = (char**)calloc(params->numElements, sizeof(char*)); 
+		for (int i = 1; i < params->numElements; i++)
+		{
+			argv[i - 1] = String_GetCString(ListString_Get(params, i));
+		}
+
+		execvp(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
