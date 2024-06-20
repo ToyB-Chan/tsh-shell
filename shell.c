@@ -188,13 +188,13 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 		if (c == EOF)
 		{
 			*outCommandReady = false;
-			return
+			return;
 		}
 
 		if (c == '\n')
 		{
 			printf("\033[A"); // revert the newline by going a line up again
-			outCommandReady = true;
+			*outCommandReady = true;
 			return;
 		}
 
