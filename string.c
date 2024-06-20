@@ -53,7 +53,7 @@ void String_AppendString(String* str, String* other)
 {
 	assert(str);
 	assert(other);
-	String_AppendData(str, other->list->data, other->list->numElements);
+	String_AppendData(str, String_GetCString(other), String_GetLength(other));
 }
 
 void String_AppendCString(String* str, char* cstr)

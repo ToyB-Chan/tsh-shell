@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define STATUS_CODE_COMMAND_NOT_FOUND 127
+
 ShellInfo* ShellInfo_New()
 {
 	ShellInfo* shell = (ShellInfo*)malloc(sizeof(ShellInfo));
@@ -75,18 +77,11 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	pipe(inPipe);
 	pipe(outPipe);
 
-
-	bool* success = (bool*)malloc(sizeof(bool));
-	*success = true;
-
 	pid_t pid = fork();
 	if (pid == 0)
 	{
 		dup2(inPipe[0], STDIN_FILENO);
 		dup2(outPipe[1], STDOUT_FILENO);
-		usleep(5000);
-		printf("child: success is %i, flipping...\n", *success);
-		*success = !*success;
 
 		close(inPipe[0]);
 		close(inPipe[1]);
@@ -94,9 +89,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(outPipe[1]);
 
 		execv(String_GetCString(filePath), argv);
-		//printf("we failed!!!\n");
-		*success = false;
-		exit(1);
+		exit(STATUS_CODE_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
 	{
@@ -104,12 +97,9 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(inPipe[1]);
 		close(outPipe[0]);
 		close(outPipe[1]);
-
 		return false;
 	}
 
-	printf("parent: success is %i, flipping...\n", *success);
-	*success = !*success;
 	close(inPipe[0]);
 	close(outPipe[1]);
 
@@ -135,7 +125,5 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	close(outPipe[0]);
 	free(argv);
 
-	bool successStack = *success;
-	free(success);
-	return successStack;
+	return outStatusCode != STATUS_CODE_COMMAND_NOT_FOUND;
 }
