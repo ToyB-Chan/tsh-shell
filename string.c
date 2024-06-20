@@ -156,7 +156,7 @@ String* String_Itoa(int x)
 	String* str = String_New();
 	size_t len = snprintf(NULL, 0, "%d", x);
 	char* cstr = (char*)malloc(sizeof(char) * len + 1);
-	snprintf(cstr, 0, "%d", x);
+	snprintf(cstr, len + 1, "%d", x);
 	String_AppendCString(str, cstr);
 	free(cstr);
 	return str;
