@@ -28,6 +28,6 @@ String* String_Join(ListString* strList, char delimiter);
 void String_Reset(String* str);
 
 String* String_Itoa(int x);
-int String_Atoi(String* str);
+bool String_Atoi(String* str, int* outInt);
 
 size_t GetCStringLength(char* cstr);

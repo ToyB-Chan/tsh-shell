@@ -72,7 +72,7 @@ void CommandList(ShellInfo* shell, ListString* params)
 {
 	assert(shell);
 	String* str = String_New();
-	for (size_t i = 0; i < shell->jobManager->jobs; i++)
+	for (size_t i = 0; i < shell->jobManager->jobs->numElements; i++)
 	{
 		String* jobStr = JobInfo_ToInfoString(ListJobInfo_Get(shell->jobManager->jobs, i));
 		String_AppendString(str, jobStr);
