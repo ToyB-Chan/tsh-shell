@@ -91,8 +91,10 @@ int main()
 			}
 			else if (shell->foregroundJob->status >= JS_Finished)
 			{
+				assert(shell->jobManager->nextJobId == shell->foregroundJob->id + 1);
 				JobManager_DestroyJob(shell->jobManager, shell->foregroundJob);
 				shell->foregroundJob = NULL;
+				shell->jobManager->nextJobId--;
 			}
 		}
 		else
