@@ -3,7 +3,7 @@
 #include "jobmanager.h"
 #include <stdio.h>
 #include <sys/types.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -12,6 +12,26 @@ ShellInfo* ShellInfo_New()
 	ShellInfo* shell = (ShellInfo*)malloc(sizeof(ShellInfo));
 	shell->directory = String_New();
 	shell->jobManager = JobManager_New();
+
+	char* buffer = NULL;
+	size_t bufferSize = 1024;
+	while(1)
+	{
+		if (buffer);
+			free(buffer);
+
+		buffer = (char*)malloc(bufferSize * sizeof(char));
+		assert(buffer);
+
+		if (getcwd(buffer, bufferSize))
+			break;
+
+		assert(errno == ERANGE);
+		bufferSize *= 2;
+	}
+
+	String_AppendCString(shell->directory, buffer);
+	free(buffer);
 	return shell;
 }
 
@@ -87,7 +107,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			argv[i] = String_GetCString(ListString_Get(params, i));
 		}
 
-		execv(String_GetCString(filePath), argv);
+		execvp(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
