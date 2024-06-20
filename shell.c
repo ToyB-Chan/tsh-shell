@@ -90,7 +90,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 			argv[i] = String_GetCString(ListString_Get(params, i));
 		}
 
-		execvp(String_GetCString(filePath), argv);
+		execv(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
