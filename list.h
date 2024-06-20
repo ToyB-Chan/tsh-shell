@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define INITIAL_CAPACITY 16
+#define INVALID_INDEX -1
 
 #define DECLARE_LIST(ListName, ElementType) \
 typedef struct ListName \
@@ -23,6 +24,7 @@ void ListName##_Clear(ListName* list); \
 void ListName##_Insert(ListName* list, ElementType element, size_t index); \
 void ListName##_Append(ListName* list, ElementType* array, size_t numElements); \
 ElementType ListName##_Get(ListName* list, size_t index); \
+size_t ListName##_Find(ListName* list, ElementType element); \
 void ListName##_Destroy(ListName* list);
 
 #define DEFINE_LIST(ListName, ElementType) \
@@ -117,6 +119,19 @@ ElementType ListName##_Get(ListName* list, size_t index) \
 	assert(list); \
 	assert(index >= 0 && index < list->numElements); \
 	return list->data[index]; \
+} \
+\
+size_t ListName##_Find(ListName* list, ElementType element) \
+{ \
+	assert(list); \
+	assert(element); \
+	for (size_t i = 0; i < list->numElements; i++) \
+	{ \
+		if (ListName##_Get(list, i) == element) \
+			return i; \
+	} \
+\
+	return INVALID_INDEX; \
 } \
 \
 void ListName##_Destroy(ListName* list) \

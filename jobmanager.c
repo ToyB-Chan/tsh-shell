@@ -34,6 +34,7 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 	job->pid = 0;
 	job->exitStatus = 0;
 
+	ListJobInfo_Add(manager->jobs, job);
 	return job;
 }
 
@@ -41,6 +42,9 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 {
 	assert(manager);
 	assert(job);
+	size_t index = ListJobInfo_Find(manager->jobs, job);
+	assert(index != INVALID_INDEX);
+	ListChar_Remove(manager->jobs, index);
 	assert(atomic_load(&job->status) != JS_Running);
 }
 
