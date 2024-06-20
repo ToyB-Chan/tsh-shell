@@ -93,7 +93,7 @@ void CommandInfo(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
 
 	int id = -1;
-	CHECK_PRINT_ERROR_RETURN(String_Atoi(ListString_Get(params, 0)), "job id parameter is not a number",);
+	CHECK_PRINT_ERROR_RETURN(String_Atoi(ListString_Get(params, 0), &id), "job id parameter is not a number",);
 
 	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
 	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
