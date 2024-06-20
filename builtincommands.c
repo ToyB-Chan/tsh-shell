@@ -155,11 +155,11 @@ void CommandKill(ShellInfo* shell, ListString* params)
 
 void CommandQuit(ShellInfo* shell, ListString* params)
 {
-	for (size_t i = 0; i < shell->jobManager->jobs; i++)
+	for (size_t i = 0; i < shell->jobManager->jobs->numElements; i++)
 	{
-		JobInfo* job = (shell->jobManager, i);
+		JobInfo* job = (shell->jobManager->jobs, i);
 		job->status = JS_Killed;
-		KILL(job, SIGKILL);
+		KILL(job->pid, SIGKILL);
 	}
 
 	exit(0);
