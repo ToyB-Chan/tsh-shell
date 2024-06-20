@@ -16,13 +16,14 @@ int main()
 	int ret = fcntl(STDERR_FILENO, F_SETFL, flags | O_NONBLOCK);
 	assert(ret >= 0);
 
-	printf("\033[F"); // up one line
 	while(true)
 	{
 		usleep(50000);
 		JobManager_Tick(shell->jobManager);		
 
 		bool cmdReady = false;
+
+		printf("\033[F"); // up one line
 		while(1)
 		{
 			int c = getc(stdin);
@@ -37,7 +38,7 @@ int main()
 
 			String_AppendChar(shell->inputBuffer, (char)c);
 
-    		printf("\033[K"); // clear line (effectively removing the shell prompt)
+    		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
 			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
 			fflush(stdout);
 		}
