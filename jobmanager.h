@@ -9,22 +9,22 @@ typedef struct ListString ListString;
 typedef struct String String;
 typedef struct ShellInfo ShellInfo;
 
-typedef enum JobState
+typedef enum JobStatus
 {
 	JS_Pending,
 	JS_Running,
 	JS_Aborted,
 	JS_Faulted,
 	JS_Finished
-} JobState;
+} JobStatus;
 
 typedef struct JobInfo
 {
 	size_t id;
 	ListString* params;
-	atomic_uint state;
+	atomic_uint status;
 	pid_t pid;
-	int statusCode;
+	int exitStatus;
 } JobInfo;
 
 DECLARE_LIST(ListJobInfo, JobInfo*);

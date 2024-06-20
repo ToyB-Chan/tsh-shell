@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define STATUS_CODE_COMMAND_NOT_FOUND 127
-
 ShellInfo* ShellInfo_New()
 {
 	ShellInfo* shell = (ShellInfo*)malloc(sizeof(ShellInfo));
@@ -89,7 +87,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		close(outPipe[1]);
 
 		execv(String_GetCString(filePath), argv);
-		exit(STATUS_CODE_COMMAND_NOT_FOUND);
+		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
 	{
@@ -127,5 +125,5 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	free(argv);
 
 	*outStatusCode = WEXITSTATUS(status);
-	return *outStatusCode != STATUS_CODE_COMMAND_NOT_FOUND;
+	return *outStatusCode != EXIT_STATUS_COMMAND_NOT_FOUND;
 }

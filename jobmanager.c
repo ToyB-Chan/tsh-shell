@@ -30,9 +30,9 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 	JobInfo* job = (JobInfo*)malloc(sizeof(JobInfo));
 	job->id = manager->nextJobId++;
 	job->params = params;
-	job->state = ATOMIC_VAR_INIT(JS_Pending);
+	job->status = ATOMIC_VAR_INIT(JS_Pending);
 	job->pid = 0;
-	job->statusCode = 0;
+	job->exitStatus = 0;
 
 	return job;
 }
@@ -41,7 +41,7 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 {
 	assert(manager);
 	assert(job);
-	assert(atomic_load(&job->state) != JS_Running);
+	assert(atomic_load(&job->status) != JS_Running);
 }
 
 JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId)
@@ -63,27 +63,27 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	pid_t cpid = fork();
 	if (cpid == 0)
 	{
-		atomic_exchange(&job->state, JS_Running);
-		bool success = ShellInfo_Execute(shell, job->params, &job->statusCode);
+		atomic_exchange(&job->status, JS_Running);
+		bool success = ShellInfo_Execute(shell, job->params, &job->exitStatus);
 		String* jobStr = JobInfo_ToShellString(job);
 		if (success)
 		{
-			atomic_exchange(&job->state, JS_Finished);
+			atomic_exchange(&job->status, JS_Finished);
 			printf("[%s finished execution]\n", String_GetCString(jobStr));
 		}
 		else
 		{
 			printf("[%s an error occured during execution of the command]\n", String_GetCString(jobStr));
-			atomic_exchange(&job->state, JS_Faulted);
+			atomic_exchange(&job->status, JS_Faulted);
 		}
 
-		printf("[status=%i]\n", job->statusCode);
+		printf("[status=%i]\n", job->exitStatus);
 		String_Destroy(jobStr);
-		exit(job->statusCode);
+		exit(job->exitStatus);
 	}
 	else if (cpid < 0)
 	{
-		atomic_exchange(&job->state, JS_Faulted);
+		atomic_exchange(&job->status, JS_Faulted);
 	}
 
 	job->pid = cpid;
@@ -107,7 +107,7 @@ String* JobInfo_ToInfoString(JobInfo* job)
 
 	String_AppendChar(str, '\t');
 
-	switch (atomic_load(&job->state))
+	switch (atomic_load(&job->status))
 	{
 	case JS_Pending:
 		String_AppendCString(str, "pending");
@@ -137,7 +137,7 @@ String* JobInfo_ToInfoString(JobInfo* job)
 	String_AppendChar(str, '\t');
 	String_AppendCString(str, "status=");
 
-	temp = String_Itoa(job->statusCode);
+	temp = String_Itoa(job->exitStatus);
 	String_AppendString(str, temp);
 	String_Destroy(temp);
 

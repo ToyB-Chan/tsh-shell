@@ -2,6 +2,8 @@
 
 #include <stdbool.h>
 
+#define EXIT_STATUS_COMMAND_NOT_FOUND 127
+
 typedef struct String String;
 typedef struct ListString ListString;
 typedef struct JobManager JobManager;
