@@ -113,9 +113,6 @@ void JobManager_Tick(JobManager* manager)
 			String_AppendChar(job->outBuffer, (char)c);
 		}
 
-		fclose(pipeOutStream);
-		pipeOutStream = NULL;
-
 		pid_t tpid = waitpid(job->pid, &job->exitStatus, WNOHANG);
 		if (tpid == job->pid)
 		{
