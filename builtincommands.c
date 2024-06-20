@@ -65,6 +65,12 @@ bool ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 		return true;
 	}
 
+	if (String_EqualsCString(cmd, "clear"))
+	{
+		CommandClear(shell, params);
+		return true;
+	}
+
 	ListString_Insert(params, cmd, 0);
 	return false;
 }
@@ -230,6 +236,12 @@ void CommandCd(ShellInfo* shell, ListString* params)
 void CommandPwd(ShellInfo* shell, ListString* params)
 {
 	printf("%s\n", String_GetCString(shell->directory));
+	PRINT_SUCCESS();
+}
+
+void CommandClear(ShellInfo* shell, ListString* params)
+{
+	printf("\033[2J\033[H");
 	PRINT_SUCCESS();
 }
 
