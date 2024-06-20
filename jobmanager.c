@@ -88,7 +88,8 @@ void JobManager_Tick(JobManager* manager)
 		{
 			int c;
 			int bytesRead = read(job->outPipe[0], &c, 1);
-			assert(bytesRead == 1);
+			if (bytesRead != 1)
+				break;
 
 			if (c == EOF)
 				break;
