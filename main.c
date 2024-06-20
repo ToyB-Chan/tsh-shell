@@ -59,7 +59,7 @@ int main()
 		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
 		fflush(stdout);
 
-		usleep(5000);
+		usleep(15000);
 
 		if (cmdReady)
 		{
