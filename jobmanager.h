@@ -56,3 +56,4 @@ void JobManager_Tick(JobManager* manager);
 void JobInfo_Execute(JobInfo* job, ShellInfo* shell);
 String* JobInfo_ToInfoString(JobInfo* job);
 void JobInfo_Cleanup(JobInfo* job);
+int JobInfo_GetExitCode(JobInfo* job);

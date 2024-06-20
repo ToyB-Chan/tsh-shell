@@ -120,7 +120,7 @@ void JobManager_Tick(JobManager* manager)
 				job->status = JS_Finished;
 
 			JobInfo_Cleanup(job);
-			printf("[job %li has finished executing]\n[status=%i]\n", job->id, WEXITSTATUS(job->exitStatus));
+			printf("[job %li has finished executing]\n[status=%i]\n", job->id, JobInfo_GetExitCode(job));
 		}
 	}
 	
@@ -226,7 +226,7 @@ String* JobInfo_ToInfoString(JobInfo* job)
 	String_AppendChar(str, '\t');
 	String_AppendCString(str, "status=");
 
-	temp = String_Itoa(job->exitStatus);
+	temp = String_Itoa(JobInfo_GetExitCode(job));
 	String_AppendString(str, temp);
 	String_Destroy(temp);
 
@@ -260,4 +260,12 @@ void JobInfo_Cleanup(JobInfo* job)
 	String_Destroy(job->outBuffer);
 
 	job->needsCleanup = false;
+}
+
+int JobInfo_GetExitCode(JobInfo* job)
+{
+	if (WIFEXITED(job->exitStatus))
+		return WEXITSTATUS(job->exitStatus);
+	
+	return -1;
 }
