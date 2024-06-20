@@ -9,6 +9,7 @@
 typedef struct ListString ListString;
 typedef struct String String;
 typedef struct ShellInfo ShellInfo;
+typedef struct FILE FILE;
 
 typedef enum JobStatus
 {

@@ -92,7 +92,7 @@ void JobManager_Tick(JobManager* manager)
 			if (c == EOF)
 				break;
 
-			if (c == '\n');
+			if (c == '\n')
 			{
 				if (job->outFile)
 				{
@@ -119,10 +119,10 @@ void JobManager_Tick(JobManager* manager)
 		if (tpid == job->pid)
 		{
 			if (job->status == JS_Running)
-				job->status == JS_Finished;
+				job->status = JS_Finished;
 
 			JobInfo_Cleanup(job);
-			printf("[job %i has finished executing]\n[status=%i]\n", job->id, WEXITSTATUS(job->exitStatus));
+			printf("[job %li has finished executing]\n[status=%i]\n", job->id, WEXITSTATUS(job->exitStatus));
 		}
 	}
 	
