@@ -90,6 +90,7 @@ void JobManager_Tick(JobManager* manager)
 			int c;
 			int bytesRead = read(job->outPipe[0], &c, 1);
 			if (bytesRead != 1)
+			E
 				printf("oh oh: %i", errno);
 
 			if (c == EOF)
@@ -170,9 +171,9 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 		job->status = JS_Faulted;
 	}
 
-	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
+	int flags = fcntl(job->outPipe[0], F_GETFD, 0);
 	assert(flags >= 0);
-	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
+	int ret = fcntl(job->outPipe[0], F_SETFD, flags | O_NONBLOCK);
 	assert(ret >= 0);
 
 	close(job->inPipe[0]);
