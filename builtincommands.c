@@ -154,7 +154,7 @@ void CommandCd(ShellInfo* shell, ListString* params)
 	}
 
 	String* newPath = String_Copy(shell->directory);
-	ListString* pathParts = String_Split(path, "/");
+	ListString* pathParts = String_Split(path, '/');
 	for (size_t i = 0; i < pathParts->numElements; i++)
 	{
 		if (String_EqualsCString(ListString_Get(pathParts, i), "."))
@@ -178,7 +178,7 @@ void CommandCd(ShellInfo* shell, ListString* params)
 		if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
 			String_AppendChar(newPath, '/');
 		
-		String_AppendCString(newPath, ListString_Get(pathParts, i));
+		String_AppendCString(newPath, String_GetCString(ListString_Get(pathParts, i)));
 	}
 
 	ListString_Destroy(pathParts);
