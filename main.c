@@ -60,30 +60,38 @@ int main()
 				String_AppendChar(shell->inputBuffer, (char)c);
 			}
 
-			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-			fflush(stdout);
-
-			if (cmdReady)
+			if (shell->foregroundJob == NULL)
 			{
-				printf("\n");
-				ListString* params = String_Split(shell->inputBuffer, ' ');
-				String_Reset(shell->inputBuffer);
+				printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+				fflush(stdout);
 
-				bool success = ExecuteBuiltinCommand(shell, params);
-
-				if (success)
+				if (cmdReady)
 				{
+					printf("\n");
+					ListString* params = String_Split(shell->inputBuffer, ' ');
+					String_Reset(shell->inputBuffer);
+
+					bool success = ExecuteBuiltinCommand(shell, params);
+
+					if (success)
+					{
+						for (size_t i = 0; i < params->numElements; i++)
+							String_Destroy(ListString_Get(params, i));
+						ListString_Destroy(params);
+						continue;
+					}
+
+					//ExecuteFile(shell, params);
+
 					for (size_t i = 0; i < params->numElements; i++)
 						String_Destroy(ListString_Get(params, i));
 					ListString_Destroy(params);
-					continue;
 				}
-
-				//ExecuteFile(shell, params);
-
-				for (size_t i = 0; i < params->numElements; i++)
-					String_Destroy(ListString_Get(params, i));
-				ListString_Destroy(params);
+			}
+			else if (shell->foregroundJob->status >= JS_Finished)
+			{
+				JobManager_DestroyJob(shell->jobManager, shell->foregroundJob);
+				shell->foregroundJob = NULL;
 			}
 		}
 		else

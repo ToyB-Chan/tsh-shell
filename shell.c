@@ -15,7 +15,8 @@ ShellInfo* ShellInfo_New()
 	shell->directory = String_New();
 	shell->jobManager = JobManager_New();
 	shell->inputBuffer = String_New();
-	shell->waitForJob = 0;
+	shell->waitForJob = NULL;
+	shell->foregroundJob = NULL;
 
 	char* buffer = NULL;
 	size_t bufferSize = 1024;
@@ -221,7 +222,7 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 	for (size_t i = 0; i < pathEnvList->numElements; i++)
 		String_Destroy(ListString_Get(pathEnvList, i));
 	ListString_Destroy(pathEnvList);
-	
+
 	String_Destroy(realPath);
 	return String_Copy(path);
 }

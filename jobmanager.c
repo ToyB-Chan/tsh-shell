@@ -80,7 +80,7 @@ JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId)
 	return NULL;
 }
 
-void JobManager_Tick(JobManager* manager)
+void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 {
 	for (size_t i = 0; i < manager->jobs->numElements; i++)
 	{
@@ -103,7 +103,10 @@ void JobManager_Tick(JobManager* manager)
 				}
 				else
 				{
-					printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
+					if (job == shell->foregroundJob)
+						printf("%s\n", job->id, String_GetCString(job->outBuffer));
+					else
+						printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
 					String_Reset(job->outBuffer);
 				}
 

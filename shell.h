@@ -21,6 +21,7 @@ typedef struct ShellInfo
 	String* inputBuffer;
 
 	JobInfo* waitForJob;
+	JobInfo* foregroundJob;
 } ShellInfo;
 
 
