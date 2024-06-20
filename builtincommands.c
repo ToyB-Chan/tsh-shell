@@ -247,6 +247,10 @@ void CommandClear(ShellInfo* shell, ListString* params)
 
 void ExecuteFile(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
+	assert(shell->foregroundJob == NULL);
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no executable given",);
+
 	String* orgPath = ListString_Remove(params, 0);
 	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
 	String_Destroy(orgPath);
@@ -255,7 +259,7 @@ void ExecuteFile(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
 	ListString_Insert(params, resolvedPath, 0);
 
-	int statusCode = 0;
-	ShellInfo_Execute(shell, params, &statusCode);
-	printf("[status=%i]\n", statusCode);
+	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
+	shell->foregroundJob = job;
+	JobInfo_Execute(job, shell);
 }
