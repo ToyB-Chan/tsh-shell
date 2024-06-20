@@ -139,7 +139,7 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 
 	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
 	assert(flags >= 0);
-	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
+	int ret = fcntl(job->outPipe[0], F_SETFL, O_NONBLOCK);
 	assert(ret >= 0);
 
 	job->inBuffer = String_New();
