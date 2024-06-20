@@ -31,7 +31,7 @@ int main()
 	while(true)
 	{
 		printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
-		JobManager_Tick(shell->jobManager);		
+		JobManager_Tick(shell->jobManager, shell);		
 
 		if (shell->waitForJob == NULL)
 		{
