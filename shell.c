@@ -14,6 +14,7 @@ ShellInfo* ShellInfo_New()
 	ShellInfo* shell = (ShellInfo*)malloc(sizeof(ShellInfo));
 	shell->directory = String_New();
 	shell->jobManager = JobManager_New();
+	shell->inputBuffer = String_New();
 
 	char* buffer = NULL;
 	size_t bufferSize = 1024;
@@ -42,6 +43,7 @@ void ShellInfo_Destroy(ShellInfo* shell)
 	assert(shell);
 	String_Destroy(shell->directory);
 	JobManager_Destroy(shell->jobManager);
+	String_Destroy(shell->inputBuffer);
 	free(shell);
 }
 

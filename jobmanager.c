@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 
 DEFINE_LIST(ListJobInfo, JobInfo*);
 
@@ -30,9 +32,17 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 	JobInfo* job = (JobInfo*)malloc(sizeof(JobInfo));
 	job->id = manager->nextJobId++;
 	job->params = params;
-	job->status = ATOMIC_VAR_INIT(JS_Pending);
+	job->status = JS_Pending;
+
 	job->pid = 0;
+	job->inFile = NULL;
+	job->outFile = NULL;
+
+	job->inBuffer = NULL;
+	job->outBuffer = NULL;
+
 	job->exitStatus = 0;
+	job->needsCleanup = false;
 
 	ListJobInfo_Add(manager->jobs, job);
 	return job;
@@ -42,10 +52,15 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 {
 	assert(manager);
 	assert(job);
+	assert(job->status != JS_Running);
+	assert(!job->needsCleanup);
+
 	size_t index = ListJobInfo_Find(manager->jobs, job);
 	assert(index != INVALID_INDEX);
 	ListJobInfo_Remove(manager->jobs, index);
-	assert(atomic_load(&job->status) != JS_Running);
+
+	ListString_Destroy(job->params);
+	free(job);
 }
 
 JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId)
@@ -60,32 +75,112 @@ JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId)
 	return NULL;
 }
 
+void JobManager_Tick(JobManager* manager)
+{
+	for (size_t i = 0; i < manager->jobs->numElements; i++)
+	{
+		JobInfo* job = ListJobInfo_Get(manager->jobs, i);
+		if (!job->needsCleanup)
+			continue;
+
+		FILE* pipeOutStream = fdopen(job->outPipe[0], "r");
+		assert(pipeOutStream);
+
+		while(1)
+		{
+			int c = fgetc(pipeOutStream);
+			if (c == EOF)
+				break;
+
+			if (c == '\n');
+			{
+				if (job->outFile)
+				{
+
+				}
+				else
+				{
+					String* jobinfo = JobInfo_ToShellString(job);
+					printf("%s %s", String_GetCString(jobinfo), String_GetCString(job->outBuffer));
+					String_Destroy(jobinfo);
+					String_Reset(job->outBuffer);
+				}
+
+				continue;
+			}
+
+			String_AppendChar(job->outBuffer, (char)c);
+		}
+
+		fclose(pipeOutStream);
+		pipeOutStream = NULL;
+
+		pid_t tpid = waitpid(job->pid, &job->exitStatus, WNOHANG);
+		if (tpid == job->pid)
+		{
+			if (job->status == JS_Running)
+				job->status == JS_Finished;
+
+			JobInfo_Cleanup(job);
+			printf("[job %i has finished executing]\n[status=%i]\n", job->id, WEXITSTATUS(job->exitStatus));
+		}
+	}
+	
+}
+
 void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 {
 	assert(job);
 	assert(job->pid == 0);
+	assert(job->status == JS_Pending);
+
+	pipe(job->inPipe);
+	pipe(job->outPipe);
+
+	job->inBuffer = String_New();
+	job->outBuffer = String_New();
+
 	pid_t cpid = fork();
 	if (cpid == 0)
 	{
-		atomic_exchange(&job->status, JS_Running);
-		bool success = ShellInfo_Execute(shell, job->params, &job->exitStatus);
-		if (success)
+		dup2(job->inPipe[0], STDIN_FILENO);
+		dup2(job->outPipe[1], STDOUT_FILENO);
+
+		close(job->inPipe[0]);
+		close(job->inPipe[1]);
+		close(job->outPipe[0]);
+		close(job->outPipe[1]);
+
+		String* filePath = ListString_Get(job->params, 0);
+
+		// needs nullptr as last element to mark the end
+		char** argv = (char**)calloc(job->params->numElements + 1, sizeof(char*));
+		assert(argv);
+		for (size_t i = 0; i < job->params->numElements; i++)
 		{
-			atomic_exchange(&job->status, JS_Finished);
-		}
-		else
-		{
-			atomic_exchange(&job->status, JS_Faulted);
+			argv[i] = String_GetCString(ListString_Get(job->params, i));
 		}
 
-		exit(job->exitStatus);
+		chdir(String_GetCString(shell->directory));
+		execvp(String_GetCString(filePath), argv);
+		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (cpid < 0)
 	{
-		atomic_exchange(&job->status, JS_Faulted);
+		job->status = JS_Faulted;
 	}
 
+	close(job->inPipe[0]);
+	close(job->outPipe[1]);
+
+	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
+	assert(flags >= 0);
+	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
+	assert(ret >= 0);
+
 	job->pid = cpid;
+	job->status = JS_Running;
+	job->needsCleanup = true;
 }
 
 String* JobInfo_ToInfoString(JobInfo* job)
@@ -106,7 +201,7 @@ String* JobInfo_ToInfoString(JobInfo* job)
 
 	String_AppendChar(str, '\t');
 
-	switch (atomic_load(&job->status))
+	switch (job->status)
 	{
 	case JS_Pending:
 		String_AppendCString(str, "pending");
@@ -161,4 +256,25 @@ String* JobInfo_ToShellString(JobInfo* job)
 	String_AppendCString(str, "]");
 
 	return str;
+}
+
+void JobInfo_Cleanup(JobInfo* job)
+{
+	assert(job);
+	assert(job->status >= JS_Finished);
+	assert(job->needsCleanup);
+
+	close(job->inPipe[1]);
+	close(job->outPipe[0]);
+
+	if (job->inFile)
+		fclose(job->inFile);
+
+	if (job->outFile)
+		fclose(job->outFile);
+
+	String_Destroy(job->inBuffer);
+	String_Destroy(job->outBuffer);
+
+	job->needsCleanup = false;
 }
