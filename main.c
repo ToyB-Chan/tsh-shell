@@ -58,7 +58,6 @@ int main()
 
 		if (cmdReady)
 		{
-			printf("\n");
 			ListString* params = String_Split(shell->inputBuffer, ' ');
 			String_Reset(shell->inputBuffer);
 
