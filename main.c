@@ -47,7 +47,8 @@ int main()
 				break;
 			}
 
-			if (c == '\b')
+			// ascii backspace or acsii delete
+			if (c == 8 || c == 127)
 			{
 				String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
 				continue;
