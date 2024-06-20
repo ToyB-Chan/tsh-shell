@@ -127,3 +127,13 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 	*outStatusCode = WEXITSTATUS(status);
 	return *outStatusCode != EXIT_STATUS_COMMAND_NOT_FOUND;
 }
+
+bool ShellInfo_IsFile(ShellInfo* shell, String* path)
+{
+	return access(String_GetCString(path), F_OK) == 0;
+}
+
+bool ShellInfo_IsExecutable(ShellInfo* shell, String* path)
+{
+	return access(String_GetCString(path), X_OK) == 0;
+}

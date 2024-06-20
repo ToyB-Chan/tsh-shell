@@ -162,6 +162,16 @@ String* String_Itoa(int x)
 	return str;
 }
 
+bool String_Atoi(String* str, int* outInt)
+{
+	int n = atoi(String_GetCString(str));
+	if (n == 0 && String_GetCharAt(str, 0) != '0')
+		return false;
+	
+	*outInt = n;
+	return true;
+}
+
 size_t GetCStringLength(char* cstr)
 {
 	size_t cstrLength = 0;

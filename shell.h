@@ -4,6 +4,10 @@
 
 #define EXIT_STATUS_COMMAND_NOT_FOUND 127
 
+#define CHECK_PRINT_ERROR(condition, msg) if (!condition) { printf("[%s]\n[status=1]", msg); }
+#define CHECK_PRINT_ERROR_RETURN(condition, msg, returnVal) if (!condition) { printf("[%s]\n[status=1]", msg); return returnVal; }
+#define PRINT_SUCCESS() printf("[status=0]\n");
+
 typedef struct String String;
 typedef struct ListString ListString;
 typedef struct JobManager JobManager;
@@ -18,3 +22,5 @@ typedef struct ShellInfo
 ShellInfo* ShellInfo_New();
 void ShellInfo_Destroy(ShellInfo* shell);
 bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode);
+bool ShellInfo_IsFile(ShellInfo* shell, String* path);
+bool ShellInfo_IsExecutable(ShellInfo* shell, String* path);

@@ -65,20 +65,15 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	{
 		atomic_exchange(&job->status, JS_Running);
 		bool success = ShellInfo_Execute(shell, job->params, &job->exitStatus);
-		String* jobStr = JobInfo_ToShellString(job);
 		if (success)
 		{
 			atomic_exchange(&job->status, JS_Finished);
-			printf("[%s finished execution]\n", String_GetCString(jobStr));
 		}
 		else
 		{
-			printf("[%s an error occured during execution of the command]\n", String_GetCString(jobStr));
 			atomic_exchange(&job->status, JS_Faulted);
 		}
 
-		printf("[status=%i]\n", job->exitStatus);
-		String_Destroy(jobStr);
 		exit(job->exitStatus);
 	}
 	else if (cpid < 0)

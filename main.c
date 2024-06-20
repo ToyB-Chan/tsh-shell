@@ -41,7 +41,7 @@ int main()
 		bool success = ExecuteBuiltinCommand(shell, params);
 
 		if (!success)
-			printf("[invalid command '%s'!]\n[status=1]\n", String_GetCString(ListString_Get(params, 0)));
+			printf("[invalid command '%s'!]\n[status=%i]\n", String_GetCString(ListString_Get(params, 0)), EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	
 }
