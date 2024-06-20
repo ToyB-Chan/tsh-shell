@@ -102,7 +102,7 @@ void JobManager_Tick(JobManager* manager)
 				else
 				{
 					String* jobinfo = JobInfo_ToShellString(job);
-					printf("%s %s", String_GetCString(jobinfo), String_GetCString(job->outBuffer));
+					printf("%s %s\n", String_GetCString(jobinfo), String_GetCString(job->outBuffer));
 					String_Destroy(jobinfo);
 					String_Reset(job->outBuffer);
 				}
@@ -173,6 +173,12 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 
 	close(job->inPipe[0]);
 	close(job->outPipe[1]);
+
+	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	assert(flags >= 0);
+	int ret = fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+	assert(ret >= 0);
+
 
 	job->pid = cpid;
 	job->status = JS_Running;
