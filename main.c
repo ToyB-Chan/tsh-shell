@@ -91,7 +91,7 @@ int main()
 			if (shell->waitForJob->status >= JS_Finished)
 			{
 				shell->waitForJob = NULL;
-				printf("[waiting finished]\n")
+				printf("[waiting finished]\n");
 				PRINT_SUCCESS();
 			}
 		}
