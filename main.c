@@ -18,20 +18,21 @@ int main()
 	assert(ret >= 0);
 
 	
-    // Step 3: Ensure terminal settings are set to non-canonical mode (optional but often necessary)
+    // ensure terminal settings are set to non-canonical mode
     struct termios term;
     ret = tcgetattr(STDIN_FILENO, &term);
     assert(ret == 0);
     
-    term.c_lflag &= ~(ICANON); // Disable canonical mode and echo
+    term.c_lflag &= ~(ICANON);
     ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
     assert(ret == 0);
 
-	printf("\n");
+	printf("tsh@%s> ", String_GetCString(shell->directory));
+	fflush(stdout);
 
 	while(true)
 	{
-		printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
+		usleep(5000);
 		JobManager_Tick(shell->jobManager);		
 
 		bool cmdReady = false;
@@ -50,11 +51,6 @@ int main()
 			String_AppendChar(shell->inputBuffer, (char)c);
 		}
 
-		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-		fflush(stdout);
-
-		usleep(5000);
-
 		if (cmdReady)
 		{
 			ListString* params = String_Split(shell->inputBuffer, ' ');
@@ -70,6 +66,9 @@ int main()
 
 			//ExecuteFile(shell, params);
 			ListString_Destroy(params);
+
+			printf("tsh@%s> ", String_GetCString(shell->directory));
+			fflush(stdout);
 		}
 	}
 	
