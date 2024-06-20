@@ -20,7 +20,6 @@ int main()
 				break;
 
 			String_AppendChar(paramString, (char)c);
-			printf("a");
 		}
 
 		ListString* params = String_Split(paramString, ' ');
