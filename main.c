@@ -6,6 +6,7 @@
 #include "jobmanager.h"
 #include <unistd.h>
 #include <fcntl.h>
+#include <termios.h>
 
 int main()
 {
@@ -15,6 +16,16 @@ int main()
 	assert(flags >= 0);
 	int ret = fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
 	assert(ret >= 0);
+
+	
+    // Step 3: Ensure terminal settings are set to non-canonical mode (optional but often necessary)
+    struct termios term;
+    ret = tcgetattr(STDIN_FILENO, &term);
+    assert(ret == 0);
+    
+    term.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+    ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    assert(ret == 0);
 
 	while(true)
 	{
