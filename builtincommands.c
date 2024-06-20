@@ -152,6 +152,47 @@ void CommandCd(ShellInfo* shell, ListString* params)
 		PRINT_SUCCESS();
 		return;
 	}
+
+	String* newPath = String_Copy(shell->directory);
+	ListString* pathParts = String_Split(path, "/");
+	for (size_t i = 0; i < pathParts->numElements; i++)
+	{
+		if (String_EqualsCString(ListString_Get(pathParts, i), "."))
+			continue;
+
+		if (String_EqualsCString(ListString_Get(pathParts, i), ".."))
+		{
+			while(1)
+			{
+				if (String_EqualsCString(newPath, "/"))
+					break;
+
+				String_RemoveAt(newPath, String_GetLength(newPath) - 1);
+				if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
+					break;
+			}
+
+			continue;
+		}
+
+		if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
+			String_AppendChar(newPath, '/');
+		
+		String_AppendCString(newPath, ListString_Get(pathParts, i));
+	}
+
+	ListString_Destroy(pathParts);
+
+	if (!ShellInfo_IsDirectory(shell, newPath))
+	{
+		CHECK_PRINT_ERROR(false, "directory does not exist");
+		String_Destroy(newPath);
+		return;
+	}
+
+	String_Destroy(shell->directory);
+	shell->directory = newPath;
+	PRINT_SUCCESS();
 }
 
 void CommandPwd(ShellInfo* shell, ListString* params)

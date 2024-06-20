@@ -161,7 +161,7 @@ bool ShellInfo_IsExecutable(ShellInfo* shell, String* path)
 	return access(String_GetCString(path), X_OK) == 0;
 }
 
-bool ShellInfo_IsDirectory(ShellInfo* shekk, String* path)
+bool ShellInfo_IsDirectory(ShellInfo* shell, String* path)
 {
 	struct stat info;
 
