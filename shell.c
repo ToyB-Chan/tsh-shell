@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 ShellInfo* ShellInfo_New()
 {
@@ -17,7 +18,7 @@ ShellInfo* ShellInfo_New()
 	size_t bufferSize = 1024;
 	while(1)
 	{
-		if (buffer);
+		if (buffer)
 			free(buffer);
 
 		buffer = (char*)malloc(bufferSize * sizeof(char));
