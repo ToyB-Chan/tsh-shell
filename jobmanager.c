@@ -104,7 +104,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 				else
 				{
 					if (job == shell->foregroundJob)
-						printf("%s\n", job->id, String_GetCString(job->outBuffer));
+						printf("%s\n", String_GetCString(job->outBuffer));
 					else
 						printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
 					String_Reset(job->outBuffer);

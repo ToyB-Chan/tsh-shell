@@ -51,7 +51,7 @@ void JobManager_Destroy(JobManager* manager);
 JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params);
 void JobManager_DestroyJob(JobManager* manager, JobInfo* job);
 JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId);
-void JobManager_Tick(JobManager* manager);
+void JobManager_Tick(JobManager* manager, ShellInfo* shell);
 
 void JobInfo_Execute(JobInfo* job, ShellInfo* shell);
 String* JobInfo_ToInfoString(JobInfo* job);
