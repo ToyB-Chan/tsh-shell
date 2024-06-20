@@ -79,20 +79,18 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 
 		String* filePath = ListString_Get(params, 0);
 
-		// we ignore the file path which is always at index 0
-		char** argv = (char**)calloc(params->numElements, sizeof(char*));
+		// needs nullptr as last element to mark the end
+		char** argv = (char**)calloc(params->numElements + 1, sizeof(char*));
 		assert(argv);
 
 		printf("num elem: %i\n", params->numElements);
-		for (size_t i = 1; i < params->numElements; i++)
+		for (size_t i = 0; i < params->numElements; i++)
 		{
 			printf("arg: %s\n", String_GetCString(ListString_Get(params, i)));
-			argv[i - 1] = String_GetCString(ListString_Get(params, i));
+			argv[i] = String_GetCString(ListString_Get(params, i));
 		}
 
-		argv[params->numElements - 1] = NULL; // redundant
-
-		execv(String_GetCString(filePath), argv);
+		execvp(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
