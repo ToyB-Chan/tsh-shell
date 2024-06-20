@@ -89,7 +89,7 @@ void JobManager_Tick(JobManager* manager)
 			int c;
 			int bytesRead = read(job->outPipe[0], &c, 1);
 			if (bytesRead != 1)
-			printf("Oh OH: %i", bytesRead);
+			printf("Oh OH: %i", job->outPipe[0]);
 				break;
 
 			if (c == EOF)
