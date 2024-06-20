@@ -31,7 +31,10 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 	assert(params);
 	JobInfo* job = (JobInfo*)malloc(sizeof(JobInfo));
 	job->id = manager->nextJobId++;
-	job->params = ListString_Copy(params);
+	job->params = ListString_New();
+	for (int i = 0; i < params->numElements; i++)
+		ListString_Add(job->params, String_Copy(ListString_Get(params, i)));
+
 	job->status = JS_Pending;
 
 	job->pid = 0;
@@ -233,10 +236,8 @@ String* JobInfo_ToInfoString(JobInfo* job)
 
 
 	temp = String_Join(job->params, ' ');
-	/*
 	String_AppendString(str, temp);
 	String_Destroy(temp);
-	*/
 	return str;
 }
 
