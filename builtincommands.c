@@ -150,6 +150,7 @@ void CommandKill(ShellInfo* shell, ListString* params)
 
 	job->status = JS_Killed;
 	kill(job->pid, SIGKILL);
+	printf("[killed job %li]\n", job->id);
 	PRINT_SUCCESS();
 }
 
