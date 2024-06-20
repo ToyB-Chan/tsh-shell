@@ -137,6 +137,11 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	pipe(job->inPipe);
 	pipe(job->outPipe);
 
+	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
+	assert(flags >= 0);
+	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
+	assert(ret >= 0);
+
 	job->inBuffer = String_New();
 	job->outBuffer = String_New();
 
@@ -146,10 +151,10 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 		dup2(job->inPipe[0], STDIN_FILENO);
 		dup2(job->outPipe[1], STDOUT_FILENO);
 
-		//close(job->inPipe[0]);
-		//close(job->inPipe[1]);
-		//close(job->outPipe[0]);
-		//close(job->outPipe[1]);
+		close(job->inPipe[0]);
+		close(job->inPipe[1]);
+		close(job->outPipe[0]);
+		close(job->outPipe[1]);
 
 		String* filePath = ListString_Get(job->params, 0);
 
@@ -169,11 +174,6 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	{
 		job->status = JS_Faulted;
 	}
-
-	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
-	assert(flags >= 0);
-	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
-	assert(ret >= 0);
 
 	job->pid = cpid;
 	job->status = JS_Running;
