@@ -128,68 +128,84 @@ void ShellInfo_Tick(ShellInfo* shell)
 	JobManager_Tick(shell->jobManager, shell);		
 
 	// only handle promt and input if we are not currently waiting for a job
-	if (shell->waitForJob == NULL)
+	if (shell->waitForJob != NULL)
 	{
-		bool cmdReady = false;
-		while(1)
+		if (shell->waitForJob->status >= JS_Finished)
 		{
-			int c = getc(stdin);
-			if (c == EOF)
-				break;
-
-			if (c == '\n')
-			{
-				cmdReady = true;
-				printf("\033[A"); // go one line up again
-				break;
-			}
-
-			// handle ascii backspace and acsii delete
-			if (c == 8 || c == 127)
-			{
-				if (String_GetLength(shell->inputBuffer) > 0)
-					String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
-				continue;
-			}
-
-			String_AppendChar(shell->inputBuffer, (char)c);
+		
+			shell->waitForJob = NULL;
+			printf("[waiting finished]\n");
+			PRINT_SUCCESS();
 		}
 
-		// only show promt if no foreground job is running (we might still handle input so we can redirect it)
-		if (shell->foregroundJob == NULL)
-		{
-			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-			fflush(stdout);
+		return;
+	}
 
-			if (cmdReady)
-			{
-				printf("\n");
-				ListString* params = String_Split(shell->inputBuffer, ' ');
-				String_Reset(shell->inputBuffer);
+	// handle input
+	bool cmdReady;
+	ShellInfo_UpdateInputBuffer(shell, &cmdReady);
 
-				bool success = ExecuteBuiltinCommand(shell, params);
-				
-				if (!success)
-					ExecuteFile(shell, params);
 
-				for (size_t i = 0; i < params->numElements; i++)
-					String_Destroy(ListString_Get(params, i));
-				ListString_Destroy(params);
-			}
-		}
-		else if (shell->foregroundJob->status >= JS_Finished)
+	// only show promt if no foreground job is running
+	if (shell->foregroundJob != NULL)
+	{
+		if (shell->foregroundJob->status >= JS_Finished)
 		{
 			assert(shell->jobManager->nextJobId == shell->foregroundJob->id + 1);
 			JobManager_DestroyJob(shell->jobManager, shell->foregroundJob);
 			shell->foregroundJob = NULL;
 			shell->jobManager->nextJobId--;
 		}
+
+		return;
 	}
-	else if (shell->waitForJob->status >= JS_Finished)
+
+	printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+	fflush(stdout);
+
+	if (cmdReady)
 	{
-		
-		shell->waitForJob = NULL;
-		printf("[waiting finished]\n");
-		PRINT_SUCCESS();
+		printf("\n");
+		ListString* params = String_Split(shell->inputBuffer, ' ');
+		String_Reset(shell->inputBuffer);
+
+		bool success = ExecuteBuiltinCommand(shell, params);
+
+		if (!success)
+			ExecuteFile(shell, params);
+
+		for (size_t i = 0; i < params->numElements; i++)
+			String_Destroy(ListString_Get(params, i));
+		ListString_Destroy(params);
+	}
+}
+
+void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
+{
+	while(1)
+	{
+		int c = getc(stdin);
+		if (c == EOF)
+		{
+			*outCommandReady = false;
+			return
+		}
+
+		if (c == '\n')
+		{
+			printf("\033[A"); // revert the newline by going a line up again
+			outCommandReady = true;
+			return;
+		}
+
+		// handle ascii backspace and acsii delete
+		if (c == 8 || c == 127)
+		{
+			if (String_GetLength(shell->inputBuffer) > 0)
+				String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
+			continue;
+		}
+
+		String_AppendChar(shell->inputBuffer, (char)c);
 	}
 }
