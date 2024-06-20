@@ -104,7 +104,7 @@ void JobManager_Tick(JobManager* manager)
 				else
 				{
 					String* jobinfo = JobInfo_ToShellString(job);
-					printf("%s %s\n", String_GetCString(jobinfo), String_GetCString(job->outBuffer));
+					printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
 					String_Destroy(jobinfo);
 					String_Reset(job->outBuffer);
 				}
@@ -201,11 +201,11 @@ String* JobInfo_ToInfoString(JobInfo* job)
 	switch (job->status)
 	{
 	case JS_Pending:
-		String_AppendCString(str, "pending");
+		String_AppendCString(str, "pending ");
 		break;
 
 	case JS_Running:
-		String_AppendCString(str, "running");
+		String_AppendCString(str, "running ");
 		break;
 
 	case JS_Finished:
@@ -213,11 +213,11 @@ String* JobInfo_ToInfoString(JobInfo* job)
 		break;
 
 	case JS_Aborted:
-		String_AppendCString(str, "aborted");
+		String_AppendCString(str, "aborted ");
 		break;
 
 	case JS_Faulted:
-		String_AppendCString(str, "faulted");
+		String_AppendCString(str, "faulted ");
 		break;
 	
 	default:
@@ -238,21 +238,6 @@ String* JobInfo_ToInfoString(JobInfo* job)
 	temp = String_Join(job->params, ' ');
 	String_AppendString(str, temp);
 	String_Destroy(temp);
-	return str;
-}
-
-String* JobInfo_ToShellString(JobInfo* job)
-{
-	assert(job);
-	String* str = String_New();
-	String* temp = NULL; 
-
-	String_AppendCString(str, "[job: ");
-	temp = String_Itoa(job->id);
-	String_AppendString(str, temp);
-	String_Destroy(temp);
-	String_AppendCString(str, "]");
-
 	return str;
 }
 

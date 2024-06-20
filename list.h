@@ -25,7 +25,6 @@ void ListName##_Insert(ListName* list, ElementType element, size_t index); \
 void ListName##_Append(ListName* list, ElementType* array, size_t numElements); \
 ElementType ListName##_Get(ListName* list, size_t index); \
 size_t ListName##_Find(ListName* list, ElementType element); \
-ListName* ListName##_Copy(ListName* list); \
 void ListName##_Destroy(ListName* list);
 
 #define DEFINE_LIST(ListName, ElementType) \
@@ -133,16 +132,6 @@ size_t ListName##_Find(ListName* list, ElementType element) \
 	} \
 \
 	return INVALID_INDEX; \
-} \
-\
-ListName* ListName##_Copy(ListName* list) \
-{ \
-	assert(list); \
-	ListName* copy = ListName##_New(); \
-	ListName##_ReserveCapacity(copy, list->capacity); \
-	memcpy(copy->data, list->data, list->numElements * sizeof(ElementType)); \
-	copy->numElements = list->numElements; \
-	return copy; \
 } \
 \
 void ListName##_Destroy(ListName* list) \
