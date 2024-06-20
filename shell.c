@@ -3,7 +3,7 @@
 #include "jobmanager.h"
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -82,11 +82,8 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		// needs nullptr as last element to mark the end
 		char** argv = (char**)calloc(params->numElements + 1, sizeof(char*));
 		assert(argv);
-
-		printf("num elem: %i\n", params->numElements);
 		for (size_t i = 0; i < params->numElements; i++)
 		{
-			printf("arg: %s\n", String_GetCString(ListString_Get(params, i)));
 			argv[i] = String_GetCString(ListString_Get(params, i));
 		}
 
@@ -139,4 +136,52 @@ bool ShellInfo_IsFile(ShellInfo* shell, String* path)
 bool ShellInfo_IsExecutable(ShellInfo* shell, String* path)
 {
 	return access(String_GetCString(path), X_OK) == 0;
+}
+
+String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
+{
+	assert(shell);
+	assert(path);
+	assert(String_GetLength(path) > 0);
+
+	if(String_GetCharAt(path, 0) == '/')
+		return String_Copy(path);
+
+	String* realPath = String_New();
+	String_AppendString(realPath, shell->directory);
+	String_AppendChar(realPath, '/');
+	String_AppendString(realPath, path);
+
+	if (ShellInfo_IsFile(shell, realPath) && ShellInfo_IsExecutable(shell, realPath))
+		return realPath;
+
+	char* pathEnv = getenv("PATH");
+	if (!pathEnv)
+		return String_Copy(path);
+
+	String* pathEnvStr = String_New();
+	String_AppendCString(pathEnvStr, pathEnv);
+	free(pathEnv);
+	pathEnv = NULL;
+
+	ListString* pathEnvList = String_Split(pathEnvStr, ':');
+	String_Destroy(pathEnvStr);
+	pathEnvStr = NULL;
+	for (size_t i = 0; i < pathEnvList->numElements; i++)
+	{
+		String_Reset(realPath);
+		String_AppendString(realPath, ListString_Get(pathEnvList, i));
+		String_AppendChar(realPath, '/');
+		String_AppendString(realPath, path);
+
+		if (ShellInfo_IsFile(shell, realPath) && ShellInfo_IsExecutable(shell, realPath))
+		{
+			ListString_Destroy(pathEnvList);
+			return realPath;
+		}
+	}
+
+	ListString_Destroy(pathEnvList);
+	String_Destroy(realPath);
+	return String_Copy(path);
 }

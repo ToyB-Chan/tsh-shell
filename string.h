@@ -20,13 +20,14 @@ char* String_GetCString(String* str);
 void String_AppendData(String* str, char* data, size_t numChars);
 void String_AppendString(String* str, String* other);
 void String_AppendCString(String* str, char* cstr);
+char String_GetCharAt(String* str, size_t index);
 ListString* String_Split(String* str, char delimiter);
 bool String_EqualsCString(String* str, char* cstr);
 bool String_EqualsString(String* str, String* other);
 void String_Destroy(String* str);
 String* String_Join(ListString* strList, char delimiter);
 void String_Reset(String* str);
-
+String* String_Copy(String* str);
 String* String_Itoa(int x);
 bool String_Atoi(String* str, int* outInt);
 

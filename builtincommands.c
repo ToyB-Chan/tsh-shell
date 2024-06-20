@@ -60,8 +60,14 @@ void CommandJob(ShellInfo* shell, ListString* params)
 {
 	assert(shell);
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job executable given",);
-	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, ListString_Get(params, 0)), "executable does not exist",);
-	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, ListString_Get(params, 0)), "file is not an executable",);
+
+	String* orgPath = ListString_Remove(params, 0);
+	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
+	String_Destroy(orgPath);
+
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, resolvedPath), "executable does not exist",);
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
+	ListString_Insert(params, resolvedPath, 0);
 
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
 	JobInfo_Execute(job, shell);
@@ -123,9 +129,13 @@ void CommandQuit(ShellInfo* shell, ListString* params)
 
 void ExecuteFile(ShellInfo* shell, ListString* params)
 {
-	String* path = ListString_Get(params, 0);
-	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, path), "executable does not exist",);
-	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, path), "file is not an executable",);
+	String* orgPath = ListString_Remove(params, 0);
+	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
+	String_Destroy(orgPath);
+
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, resolvedPath), "executable does not exist",);
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
+	ListString_Insert(params, resolvedPath, 0);
 
 	int statusCode = 0;
 	ShellInfo_Execute(shell, params, &statusCode);

@@ -151,6 +151,14 @@ void String_Reset(String* str)
 	ListChar_Add(str->list, '\0');
 }
 
+String* String_Copy(String* str)
+{
+	String* copy = String_New();
+	ListChar_Destroy(copy->list);
+	copy->list = ListChar_Copy(str->list);
+	return copy;
+}
+
 String* String_Itoa(int x)
 {
 	String* str = String_New();
