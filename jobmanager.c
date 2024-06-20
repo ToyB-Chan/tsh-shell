@@ -59,7 +59,7 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 	ListJobInfo_Remove(manager->jobs, index);
 
 	for (size_t i = 0; i < job->params->numElements; i++)
-		tring_Destroy(ListString_Get(job->params, i));
+		String_Destroy(ListString_Get(job->params, i));
 	ListString_Destroy(job->params);
 	free(job);
 }
