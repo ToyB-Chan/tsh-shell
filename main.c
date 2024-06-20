@@ -48,7 +48,6 @@ int main()
 			}
 
 			String_AppendChar(shell->inputBuffer, (char)c);
-			printf("!");
     		printf("\033[K"); // clear line (effectively removing the shell prompt so we can redraw it)
 			printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
 			fflush(stdout);
@@ -58,6 +57,7 @@ int main()
 
 		if (cmdReady)
 		{
+			printf("\n");
 			ListString* params = String_Split(shell->inputBuffer, ' ');
 			String_Reset(shell->inputBuffer);
 
