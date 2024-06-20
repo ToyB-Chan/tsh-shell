@@ -154,8 +154,9 @@ void String_Reset(String* str)
 String* String_Copy(String* str)
 {
 	String* copy = String_New();
-	ListChar_Destroy(copy->list);
-	copy->list = ListChar_Copy(str->list);
+	ListChar_ReserveCapacity(copy->list, str->list->capacity);
+	memcpy(copy->list->data, str->list->data, str->list->numElements * sizeof(char));
+	copy->list->numElements = str->list->numElements;
 	return copy;
 }
 

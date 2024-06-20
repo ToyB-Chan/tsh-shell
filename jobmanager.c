@@ -103,9 +103,7 @@ void JobManager_Tick(JobManager* manager)
 				}
 				else
 				{
-					String* jobinfo = JobInfo_ToShellString(job);
 					printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
-					String_Destroy(jobinfo);
 					String_Reset(job->outBuffer);
 				}
 
