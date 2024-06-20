@@ -18,14 +18,14 @@ int main()
 	assert(ret >= 0);
 
 	
-    // ensure terminal settings are set to non-canonical mode
-    struct termios term;
-    ret = tcgetattr(STDIN_FILENO, &term);
-    assert(ret == 0);
-    
-    term.c_lflag &= ~(ICANON);
-    ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
-    assert(ret == 0);
+	// ensure terminal settings are set to non-canonical mode
+	struct termios term;
+	ret = tcgetattr(STDIN_FILENO, &term);
+	assert(ret == 0);
+
+	term.c_lflag &= ~(ICANON);
+	ret = tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	assert(ret == 0);
 
 	while(true)
 	{
