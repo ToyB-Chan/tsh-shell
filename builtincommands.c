@@ -140,6 +140,8 @@ void CommandWait(ShellInfo* shell, ListString* params)
 	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
 	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
 
+	CHECK_PRINT_ERROR_RETURN(job->status <= JS_Running, "job already finished execution",);
+
 	shell->waitForJob = job;
 	printf("[waiting for job %li]\n", job->id);
 }
@@ -153,6 +155,8 @@ void CommandKill(ShellInfo* shell, ListString* params)
 
 	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
 	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
+
+	CHECK_PRINT_ERROR_RETURN(job->status == JS_Running, "job not running",);
 
 	job->status = JS_Killed;
 	kill(job->pid, SIGKILL);
