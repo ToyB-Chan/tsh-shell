@@ -79,12 +79,15 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 
 		String* filePath = ListString_Get(params, 0);
 
-		// we ignore the file path which is always at index 0 but instead (implicitly) add a nullptr to mark the end of our arg values
-		char** argv = (char**)calloc(params->numElements, sizeof(char*)); 
+		// we ignore the file path which is always at index 0
+		char** argv = (char**)calloc(params->numElements, sizeof(char*));
+		assert(argv);
 		for (int i = 1; i < params->numElements; i++)
 		{
 			argv[i - 1] = String_GetCString(ListString_Get(params, i));
 		}
+
+		argv[params->numElements - 1] = NULL; // redundant
 
 		execvp(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
