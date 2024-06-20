@@ -92,7 +92,7 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 
 		argv[params->numElements - 1] = NULL; // redundant
 
-		execvp(String_GetCString(filePath), argv);
+		execv(String_GetCString(filePath), argv);
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
 	else if (pid < 0)
