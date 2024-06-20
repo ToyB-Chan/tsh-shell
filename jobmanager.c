@@ -44,7 +44,7 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 	assert(job);
 	size_t index = ListJobInfo_Find(manager->jobs, job);
 	assert(index != INVALID_INDEX);
-	ListChar_Remove(manager->jobs, index);
+	ListJobInfo_Remove(manager->jobs, index);
 	assert(atomic_load(&job->status) != JS_Running);
 }
 
