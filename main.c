@@ -81,7 +81,8 @@ int main()
 						continue;
 					}
 
-					//ExecuteFile(shell, params);
+					shell->foregroundJob = JobManager_CreateJob(shell->jobManager, params);
+					JobInfo_Execute(shell->foregroundJob, shell);
 
 					for (size_t i = 0; i < params->numElements; i++)
 						String_Destroy(ListString_Get(params, i));
