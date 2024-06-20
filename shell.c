@@ -168,16 +168,9 @@ void ShellInfo_Tick(ShellInfo* shell)
 				String_Reset(shell->inputBuffer);
 
 				bool success = ExecuteBuiltinCommand(shell, params);
-
-				if (success)
-				{
-					for (size_t i = 0; i < params->numElements; i++)
-						String_Destroy(ListString_Get(params, i));
-					ListString_Destroy(params);
-					continue;
-				}
-
-				ExecuteFile(shell, params);
+				
+				if (!success)
+					ExecuteFile(shell, params);
 
 				for (size_t i = 0; i < params->numElements; i++)
 					String_Destroy(ListString_Get(params, i));

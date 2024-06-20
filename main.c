@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <assert.h>
 
 int main()
 {
