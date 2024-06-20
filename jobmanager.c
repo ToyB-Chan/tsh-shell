@@ -210,8 +210,8 @@ String* JobInfo_ToInfoString(JobInfo* job)
 		String_AppendCString(str, "finished");
 		break;
 
-	case JS_Aborted:
-		String_AppendCString(str, "aborted ");
+	case JS_Killed:
+		String_AppendCString(str, "killed  ");
 		break;
 
 	case JS_Faulted:

@@ -145,7 +145,7 @@ void CommandKill(ShellInfo* shell, ListString* params)
 	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
 	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
 
-	job->status = JS_Aborted;
+	job->status = JS_Killed;
 	kill(job->pid, SIGKILL);
 }
 

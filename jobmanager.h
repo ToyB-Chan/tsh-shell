@@ -16,7 +16,7 @@ typedef enum JobStatus
 	JS_Pending = 0,
 	JS_Running = 1,
 	JS_Finished = 2,
-	JS_Aborted = 3,
+	JS_Killed = 3,
 	JS_Faulted = 4,
 } JobStatus;
 
