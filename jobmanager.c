@@ -85,7 +85,7 @@ void JobManager_Tick(JobManager* manager)
 			continue;
 
 		FILE* pipeOutStream = fdopen(job->outPipe[0], "r");
-		//assert(pipeOutStream);
+		assert(pipeOutStream);
 
 		while(1)
 		{
@@ -135,8 +135,8 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	assert(job->pid == 0);
 	assert(job->status == JS_Pending);
 
-	pipe(job->inPipe);
-	pipe(job->outPipe);
+	assert(pipe(job->inPipe) == 0);
+	assert(pipe2(job->outPipe, O_NONBLOCK) == 0);
 
 	job->inBuffer = String_New();
 	job->outBuffer = String_New();
@@ -173,11 +173,6 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 
 	close(job->inPipe[0]);
 	close(job->outPipe[1]);
-
-	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
-	assert(flags >= 0);
-	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
-	assert(ret >= 0);
 
 	job->pid = cpid;
 	job->status = JS_Running;
