@@ -127,7 +127,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 			if (job == shell->foregroundJob)
 				printf("[status=%i]\n", JobInfo_GetExitCode(job));
 			else
-				printf("[job %li has finished executing]\n[status=%i]\n", job->id, JobInfo_GetExitCode(job));
+				printf("[job %li has finished executing with status=%i]\n", job->id, JobInfo_GetExitCode(job));
 		}
 	}
 	
