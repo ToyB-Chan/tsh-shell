@@ -211,12 +211,17 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 
 		if (ShellInfo_IsFile(shell, realPath) && ShellInfo_IsExecutable(shell, realPath))
 		{
+			for (size_t i = 0; i < pathEnvList->numElements; i++)
+				String_Destroy(ListString_Get(pathEnvList, i));
 			ListString_Destroy(pathEnvList);
 			return realPath;
 		}
 	}
 
+	for (size_t i = 0; i < pathEnvList->numElements; i++)
+		String_Destroy(ListString_Get(pathEnvList, i));
 	ListString_Destroy(pathEnvList);
+	
 	String_Destroy(realPath);
 	return String_Copy(path);
 }

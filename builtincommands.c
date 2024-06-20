@@ -208,6 +208,8 @@ void CommandCd(ShellInfo* shell, ListString* params)
 		String_AppendCString(newPath, String_GetCString(ListString_Get(pathParts, i)));
 	}
 
+	for (size_t i = 0; i < pathParts->numElements; i++)
+		String_Destroy(ListString_Get(pathParts, i));
 	ListString_Destroy(pathParts);
 
 	if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
