@@ -84,12 +84,12 @@ void JobManager_Tick(JobManager* manager)
 		if (!job->needsCleanup)
 			continue;
 
-		FILE* pipeOutStream = fdopen(job->outPipe[0], "r");
-		assert(pipeOutStream);
-
 		while(1)
 		{
-			int c = fgetc(pipeOutStream);
+			int c;
+			int bytesRead = read(job->outPipe[0], &c, 1);
+			assert(bytesRead == 1);
+
 			if (c == EOF)
 				break;
 
