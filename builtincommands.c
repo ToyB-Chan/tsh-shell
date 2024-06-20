@@ -144,8 +144,9 @@ void CommandCd(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no directory given",);
 
 	String* path = ListString_Get(params, 0);
-	if (String_GetCharAt(path, 0) == '/' && ShellInfo_IsDirectory(shell, path))
+	if (String_GetCharAt(path, 0) == '/')
 	{
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsDirectory(shell, path), "directory does not exist",);
 		String_Destroy(shell->directory);
 		shell->directory = String_Copy(path);
 		PRINT_SUCCESS();
