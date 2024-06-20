@@ -16,8 +16,9 @@ int main()
 	assert(ret >= 0);
 	*/
 	
-	// Set the terminal to non-canonical (disables input processing by the terminal, which also blocks) 
+	// Set the terminal to non-canonical (disables input processing by the terminal, which also blocks)
 	struct termios term;
+	int ret;
 	ret = tcgetattr(STDIN_FILENO, &term);
 	assert(ret == 0);
 	term.c_lflag &= ~(ICANON);
