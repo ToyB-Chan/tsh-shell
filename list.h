@@ -141,7 +141,8 @@ ListName* ListName##_Copy(ListName* list) \
 	ListName* copy = ListName##_New(); \
 	ListName##_ReserveCapacity(copy, list->capacity); \
 	memcpy(copy->data, list->data, list->numElements * sizeof(ElementType)); \
-	copy->numElements = list->numElements; \ 
+	copy->numElements = list->numElements; \
+	return copy; \
 } \
 \
 void ListName##_Destroy(ListName* list) \
