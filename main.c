@@ -72,11 +72,16 @@ int main()
 
 			if (success)
 			{
+				for (size_t i = 0; i < params->numElements; i++)
+					String_Destroy(ListString_Get(params, i));
 				ListString_Destroy(params);
 				continue;
 			}
 
 			//ExecuteFile(shell, params);
+
+			for (size_t i = 0; i < params->numElements; i++)
+				String_Destroy(ListString_Get(params, i));
 			ListString_Destroy(params);
 		}
 	}

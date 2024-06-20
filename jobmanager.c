@@ -30,7 +30,7 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 	assert(params);
 	JobInfo* job = (JobInfo*)malloc(sizeof(JobInfo));
 	job->id = manager->nextJobId++;
-	job->params = params;
+	job->params = ListString_Copy(params);
 	job->status = JS_Pending;
 
 	job->pid = 0;
@@ -58,6 +58,8 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 	assert(index != INVALID_INDEX);
 	ListJobInfo_Remove(manager->jobs, index);
 
+	for (size_t i = 0; i < job->params->numElements; i++)
+		tring_Destroy(ListString_Get(job->params, i));
 	ListString_Destroy(job->params);
 	free(job);
 }
