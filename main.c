@@ -22,6 +22,14 @@ int main()
     	printf("\033[K"); // clear line (effectively removing the shell prompt)
 		JobManager_Tick(shell->jobManager);
 
+		printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+		fflush(stdout);
+		
+		usleep(50000);
+
+		printf("\n");
+		fflush(stdout);
+
 		bool cmdReady = false;
 		while(1)
 		{
@@ -37,9 +45,6 @@ int main()
 
 			String_AppendChar(shell->inputBuffer, (char)c);
 		}
-
-		printf("tsh@%s> %s\n", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-		fflush(stdout);
 
 		if (cmdReady)
 		{
@@ -57,8 +62,6 @@ int main()
 			//ExecuteFile(shell, params);
 			ListString_Destroy(params);
 		}
-
-		usleep(50000);
 	}
 	
 }
