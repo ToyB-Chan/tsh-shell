@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <sys/wait.h>
 
 int main()
 {
@@ -91,7 +92,7 @@ int main()
 			pid_t tpid = waitpid(shell->waitForJob->pid, &status, WNOHANG);
 			if (tpid == shell->waitForJob->pid)
 			{
-				shell->waitForJob = NULL
+				shell->waitForJob = NULL;
 				PRINT_SUCCESS();
 			}
 		}

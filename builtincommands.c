@@ -159,7 +159,7 @@ void CommandQuit(ShellInfo* shell, ListString* params)
 	{
 		JobInfo* job = ListJobInfo_Get(shell->jobManager->jobs, i);
 		job->status = JS_Killed;
-		KILL(job->pid, SIGKILL);
+		kill(job->pid, SIGKILL);
 	}
 
 	exit(0);
