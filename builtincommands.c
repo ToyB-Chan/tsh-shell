@@ -135,6 +135,7 @@ void CommandWait(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
 
 	shell->waitForJob = job;
+	printf("[waiting for job %li]\n", job->id);
 }
 
 void CommandKill(ShellInfo* shell, ListString* params)
