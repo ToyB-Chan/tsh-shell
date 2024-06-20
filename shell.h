@@ -25,4 +25,5 @@ void ShellInfo_Destroy(ShellInfo* shell);
 bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode);
 bool ShellInfo_IsFile(ShellInfo* shell, String* path);
 bool ShellInfo_IsExecutable(ShellInfo* shell, String* path);
+bool ShellInfo_IsDirectory(ShellInfo* shekk, String* path);
 String* ShellInfo_ResolvePath(ShellInfo* shell, String* path);

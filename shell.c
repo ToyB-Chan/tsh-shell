@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 ShellInfo* ShellInfo_New()
 {
@@ -158,6 +159,16 @@ bool ShellInfo_IsFile(ShellInfo* shell, String* path)
 bool ShellInfo_IsExecutable(ShellInfo* shell, String* path)
 {
 	return access(String_GetCString(path), X_OK) == 0;
+}
+
+bool ShellInfo_IsDirectory(ShellInfo* shekk, String* path)
+{
+	struct stat info;
+
+	if (stat(String_GetCString(path), &info) != 0)
+		return false;
+
+	return S_ISDIR(info.st_mode);
 }
 
 String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)

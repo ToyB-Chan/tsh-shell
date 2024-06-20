@@ -13,5 +13,7 @@ void CommandInfo(ShellInfo* shell, ListString* params);
 void CommandWait(ShellInfo* shell, ListString* params);
 void CommandKill(ShellInfo* shell, ListString* params);
 void CommandQuit(ShellInfo* shell, ListString* params);
+void CommandCd(ShellInfo* shell, ListString* params);
+void CommandPwd(ShellInfo* shell, ListString* params);
 
 void ExecuteFile(ShellInfo* shell, ListString* params);

@@ -52,6 +52,18 @@ bool ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 		return true;
 	}
 	
+	if (String_EqualsCString(cmd, "cd"))
+	{
+		CommandCd(shell, params);
+		return true;
+	}
+
+	if (String_EqualsCString(cmd, "pwd"))
+	{
+		CommandPwd(shell, params);
+		return true;
+	}
+
 	ListString_Insert(params, cmd, 0);
 	return false;
 }
@@ -125,6 +137,26 @@ void CommandQuit(ShellInfo* shell, ListString* params)
 {
 	assert(shell);
 	exit(0);
+}
+
+void CommandCd(ShellInfo* shell, ListString* params)
+{
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no directory given",);
+
+	String* path = ListString_Get(params, 0);
+	if (String_GetCharAt(path, 0) == '/' && ShellInfo_IsDirectory(shell, path))
+	{
+		String_Destroy(shell->directory);
+		shell->directory = String_Copy(path);
+		PRINT_SUCCESS();
+		return;
+	}
+}
+
+void CommandPwd(ShellInfo* shell, ListString* params)
+{
+	printf("%s\n", String_GetCString(shell->directory));
+	PRINT_SUCCESS();
 }
 
 void ExecuteFile(ShellInfo* shell, ListString* params)

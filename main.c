@@ -29,9 +29,13 @@ int main()
 		bool success = ExecuteBuiltinCommand(shell, params);
 
 		if (success)
+		{
+			ListString_Destroy(params);
 			continue;
+		}
 
 		ExecuteFile(shell, params);
+		ListString_Destroy(params);
 	}
 	
 }
