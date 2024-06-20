@@ -83,9 +83,10 @@ bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode)
 		char** argv = (char**)calloc(params->numElements, sizeof(char*));
 		assert(argv);
 
+		printf("num elem: %i\n", params->numElements);
 		for (size_t i = 1; i < params->numElements; i++)
 		{
-			printf("arg: %s", String_GetCString(ListString_Get(params, i)));
+			printf("arg: %s\n", String_GetCString(ListString_Get(params, i)));
 			argv[i - 1] = String_GetCString(ListString_Get(params, i));
 		}
 
