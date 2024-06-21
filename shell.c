@@ -49,7 +49,12 @@ ShellInfo* ShellInfo_New()
 	String_AppendCString(shell->directory, buffer);
 	free(buffer);
 
-	signal(SIGINT, SignalHandlerAbort);
+	struct sigaction sa;
+	memset(&sa, 0, sizeof(sigaction));
+	sa.sa_handler = SignalHandlerAbort;
+	int ret = sigaction(SIGINT, &sa, NULL);
+	assert(ret >= 0);
+
 	return shell;
 }
 
