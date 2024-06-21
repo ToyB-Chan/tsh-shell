@@ -44,4 +44,6 @@ int main()
 	
 	ShellInfo_Destroy(shell);
 	shell = NULL;
+
+	printf("\nExited!\n");
 }
