@@ -105,14 +105,11 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		if (!job->needsCleanup)
 			continue;
 
-		bool flushOutput = false;
-
 		// Write Output
 		while(1)
 		{
 			char c = '\0';
 			int bytesRead = read(job->outPipe[0], &c, 1);
-			bool forceFlush = false;
 			if (bytesRead != 1)
 			{
 				if (job->lastOutputReadFailed == false)
@@ -121,7 +118,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 				}
 				else
 				{
-					JobInfo_FlushOutBuffer(job, shell) // flush because the process might be waiting for input
+					JobInfo_FlushOutBuffer(job, shell); // flush because the process might be waiting for input
 				}
 
 				break;
@@ -132,6 +129,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 			}
 
 			if (c == '\n')
+			{
 				JobInfo_FlushOutBuffer(job, shell);
 				continue;
 			}
