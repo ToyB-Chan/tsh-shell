@@ -36,7 +36,6 @@ int main()
 	while(true)
 	{
 		ShellInfo_Tick(shell);
-		g_abortRequested = false;
 		usleep(UPDATE_TIME_MS * 1000);
 
 		if (shell->exitRequested)
