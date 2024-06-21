@@ -24,7 +24,7 @@ void String_AppendChar(String* str, char c)
 void String_InsertChar(String* str, char c, size_t index)
 {
 	assert(str);
-	ListChar_Insert(str, c, index);
+	ListChar_Insert(str->list, c, index);
 }
 
 void String_RemoveAt(String* str, size_t index)
