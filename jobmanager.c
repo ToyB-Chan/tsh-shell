@@ -157,8 +157,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 			else
 				printf("[job %li has finished executing with status=%i]\n", job->id, JobInfo_GetExitCode(job));
 		}
-	}
-	
+	}	
 }
 
 void JobInfo_Execute(JobInfo* job, ShellInfo* shell, FILE* inFile, FILE* outFile)

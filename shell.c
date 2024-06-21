@@ -1,6 +1,7 @@
 #include "shell.h"
 #include "string.h"
 #include "jobmanager.h"
+#include "signalhandler.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -148,6 +149,11 @@ void ShellInfo_Tick(ShellInfo* shell)
 			printf("[waiting finished]\n");
 			PRINT_SUCCESS();
 		}
+		else if(g_abortRequested)
+		{
+			shell->waitForJob = NULL;
+			CHECK_PRINT_ERROR(false, "waiting aborted");
+		}
 
 		return;
 	}
@@ -176,6 +182,11 @@ void ShellInfo_Tick(ShellInfo* shell)
 			shell->foregroundJob->inBuffer = String_Copy(shell->inputBuffer);
 			String_AppendChar(shell->foregroundJob->inBuffer, '\n');
 			String_Reset(shell->inputBuffer);
+		}
+		else if(g_abortRequested)
+		{
+			kill(shell->foregroundJob->pid, SIGKILL);
+			printf("[killed]\n");
 		}
 
 		return;

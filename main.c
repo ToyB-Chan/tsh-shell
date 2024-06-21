@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "signalhandler.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
@@ -32,9 +33,12 @@ int main()
 	}
 
 	ShellInfo* shell = ShellInfo_New();
+	signal(SIGABRT, SignalHandlerAbort)
+
 	while(true)
 	{
 		ShellInfo_Tick(shell);
+		g_abortRequested = false;
 		usleep(UPDATE_TIME_MS * 1000);
 
 		if (shell->exitRequested)
