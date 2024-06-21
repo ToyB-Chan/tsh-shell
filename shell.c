@@ -161,7 +161,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 	{
 		// Draw our input string
 		printf("%s", String_GetCString(shell->inputBuffer));
-		flush(stdout);
+		fflush(stdout);
 
 		if (shell->foregroundJob->status >= JS_Finished)
 		{
