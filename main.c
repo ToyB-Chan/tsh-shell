@@ -18,7 +18,9 @@ int main()
 	// Set the terminal to non-canonical mode (disables input processing by the terminal, which also blocks the input stream)
 	// See: https://man7.org/linux/man-pages/man3/termios.3.html
 	{
+		int ret;
 		struct termios term;
+		
 		ret = tcgetattr(STDIN_FILENO, &term);
 		assert(ret == 0);
 
