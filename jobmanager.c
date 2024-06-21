@@ -158,7 +158,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		}
 		else
 		{
-			job->notifiedInputAwaitet = false
+			job->notifiedInputAwaitet = false;
 		}
 
 		pid_t tpid = waitpid(job->pid, &job->exitStatus, WNOHANG);
