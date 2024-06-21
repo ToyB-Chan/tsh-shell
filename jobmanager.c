@@ -225,6 +225,9 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 		job->status = JS_Faulted;
 	}
 
+	close(job->inPipe[0]);
+	close(job->outPipe[1]);
+
 	job->pid = cpid;
 	job->status = JS_Running;
 	job->needsCleanup = true;
@@ -297,10 +300,8 @@ void JobInfo_Cleanup(JobInfo* job)
 	assert(job->status >= JS_Finished);
 	assert(job->needsCleanup);
 
-	close(job->inPipe[0]);
 	close(job->inPipe[1]);
-	close(job->outPipe[0]);
-	close(job->outPipe[1]);
+	close(job->outPipe[0]);;
 
 	if (job->inFile)
 		fclose(job->inFile);
