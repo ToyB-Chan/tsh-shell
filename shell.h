@@ -34,7 +34,6 @@ bool ShellInfo_IsDirectory(ShellInfo* shell, String* path);
 String* ShellInfo_ResolvePath(ShellInfo* shell, String* path);
 void ShellInfo_Tick(ShellInfo* shell);
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady);
-void ShellInfo_PrintCursorOffset(ShellInfo* shell);
 String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput);
 String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput);
 
