@@ -3,5 +3,6 @@
 int main()
 {
 	printf("This is a test!\n");
-	return 0;
+	printf("Oh no, I encountered an error!\n");
+	return 1;
 }
