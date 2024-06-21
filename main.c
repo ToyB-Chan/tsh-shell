@@ -1,5 +1,4 @@
 #include "shell.h"
-#include "signalhandler.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
@@ -33,7 +32,6 @@ int main()
 	}
 
 	ShellInfo* shell = ShellInfo_New();
-	signal(SIGINT, SignalHandlerAbort);
 
 	while(true)
 	{

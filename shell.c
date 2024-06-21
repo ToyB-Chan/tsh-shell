@@ -48,6 +48,8 @@ ShellInfo* ShellInfo_New()
 
 	String_AppendCString(shell->directory, buffer);
 	free(buffer);
+
+	signal(SIGINT, SignalHandlerAbort);
 	return shell;
 }
 
@@ -57,6 +59,7 @@ void ShellInfo_Destroy(ShellInfo* shell)
 	String_Destroy(shell->directory);
 	JobManager_Destroy(shell->jobManager);
 	String_Destroy(shell->inputBuffer);
+	signal(SIGINT, NULL);
 	free(shell);
 }
 
@@ -153,6 +156,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 		{
 			shell->waitForJob = NULL;
 			CHECK_PRINT_ERROR(false, "waiting aborted");
+			g_abortRequested = false;
 		}
 
 		return;
@@ -186,7 +190,8 @@ void ShellInfo_Tick(ShellInfo* shell)
 		else if(g_abortRequested)
 		{
 			kill(shell->foregroundJob->pid, SIGKILL);
-			printf("[killed]\n");
+			printf("[aborted]\n");
+			g_abortRequested = false;
 		}
 
 		return;
@@ -212,6 +217,9 @@ void ShellInfo_Tick(ShellInfo* shell)
 			String_Destroy(ListString_Get(params, i));
 		ListString_Destroy(params);
 	}
+
+	if (g_abortRequested)
+		printf("[nothing to abort]\n");
 }
 
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
