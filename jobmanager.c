@@ -57,7 +57,6 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 
 	job->pid = 0;
 
-	job->inBuffer = NULL;
 	job->outBuffer = NULL;
 
 	job->exitStatus = 0;
