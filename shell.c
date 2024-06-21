@@ -90,7 +90,7 @@ bool ShellInfo_IsDirectory(ShellInfo* shell, String* path)
 	return S_ISDIR(info.st_mode);
 }
 
-String* ShellInfo_ResolvePath(ShellInfo* shell, String* path, bool resolveEnvVar)
+String* ShellInfo_ResolvePath(ShellInfo* shell, String* path, bool useEnvVar)
 {
 	assert(shell);
 	assert(path);
@@ -107,7 +107,7 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path, bool resolveEnvVar
 	if (ShellInfo_IsFile(shell, realPath) && ShellInfo_IsExecutable(shell, realPath))
 		return realPath;
 
-	if (!resolveEnvVar)
+	if (!useEnvVar)
 		return String_Copy(path);
 
 	char* pathEnv = getenv("PATH");
