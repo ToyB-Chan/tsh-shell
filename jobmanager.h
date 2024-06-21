@@ -57,3 +57,4 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell, FILE* inFile, FILE* outFile
 String* JobInfo_ToInfoString(JobInfo* job);
 void JobInfo_Cleanup(JobInfo* job);
 int JobInfo_GetExitCode(JobInfo* job);
+void JobInfo_FlushOutBuffer(JobInfo* job, ShellInfo* shell);

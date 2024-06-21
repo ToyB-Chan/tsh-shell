@@ -105,6 +105,8 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		if (!job->needsCleanup)
 			continue;
 
+		bool flushOutput = false;
+
 		// Write Output
 		while(1)
 		{
@@ -116,35 +118,25 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 				if (job->lastOutputReadFailed == false)
 				{
 					job->lastOutputReadFailed = true;
-					break;
 				}
 				else
 				{
-					forceFlush = true; // force flush because the process might be waiting for input
+					JobInfo_FlushOutBuffer(job, shell) // flush because the process might be waiting for input
 				}
+
+				break;
 			}
 			else
 			{
 				job->lastOutputReadFailed = false;
 			}
 
-			if (c == '\n' || (forceFlush && String_GetLength(job->outBuffer) > 0))
-			{
-				printf("mytimetoshine!!");
-				if (job == shell->foregroundJob)
-					printf("%s\n", String_GetCString(job->outBuffer));
-				else
-					printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
-
-				fflush(stdout);
-
-				String_Reset(job->outBuffer);
+			if (c == '\n')
+				JobInfo_FlushOutBuffer(job, shell);
 				continue;
 			}
-			else
-			{
-				String_AppendChar(job->outBuffer, (char)c);
-			}
+
+			String_AppendChar(job->outBuffer, (char)c);
 		}
 
 		// Write Input 
@@ -331,8 +323,25 @@ void JobInfo_Cleanup(JobInfo* job)
 
 int JobInfo_GetExitCode(JobInfo* job)
 {
+	assert(job);
 	if (WIFEXITED(job->exitStatus))
 		return WEXITSTATUS(job->exitStatus);
 	
 	return INVALID_EXIT_CODE;
+}
+
+void JobInfo_FlushOutBuffer(JobInfo* job, ShellInfo* shell)
+{
+	assert(job);
+
+	if (String_GetLength(job->outBuffer) == 0)
+		return;
+	
+	if (job == shell->foregroundJob)
+		printf("%s\n", String_GetCString(job->outBuffer));
+	else
+		printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
+
+	fflush(stdout);
+	String_Reset(job->outBuffer);
 }
