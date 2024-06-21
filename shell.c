@@ -440,20 +440,20 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	FILE* inFile = NULL;
 	invalidInput = false;
 	String* inPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
-	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe in",);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe-in",);
 	if (inPath)
 	{
-		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe-in does not exist",);
 		inFile = fopen(String_GetCString(inPath), "r");
 	}
 
 	FILE* outFile = NULL;
 	invalidInput = false;
 	String* outPath = ShellInfo_ExtractOutFilePath(shell, params, &invalidInput);
-	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe-out",);
 	if (outPath)
 	{
-		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe-out does not exist",);
 		outFile = fopen(String_GetCString(outPath), "w");
 	}
 
@@ -481,20 +481,20 @@ void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
 	FILE* inFile = NULL;
 	invalidInput = false;
 	String* inPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
-	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe in",);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe-in",);
 	if (inPath)
 	{
-		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe-in does not exist",);
 		inFile = fopen(String_GetCString(inPath), "r");
 	}
 
 	FILE* outFile = NULL;
 	invalidInput = false;
 	String* outPath = ShellInfo_ExtractOutFilePath(shell, params, &invalidInput);
-	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe-out",);
 	if (outPath)
 	{
-		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe-out does not exist",);
 		outFile = fopen(String_GetCString(outPath), "w");
 	}
 
