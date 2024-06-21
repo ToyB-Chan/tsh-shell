@@ -6,6 +6,9 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <poll.h>
+
+#define INVALID_EXIT_CODE -1
 
 DEFINE_LIST(ListJobInfo, JobInfo*);
 
@@ -40,7 +43,7 @@ void JobManager_Destroy(JobManager* manager)
 	free(manager);
 }
 
-JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
+JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params, FILE* inFile, FILE* outFile)
 {
 	assert(manager);
 	assert(params);
@@ -53,14 +56,15 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 	job->status = JS_Pending;
 
 	job->pid = 0;
-	job->inFile = NULL;
-	job->outFile = NULL;
+	job->inFile = inFile;
+	job->outFile = outFile;
 
 	job->inBuffer = NULL;
 	job->outBuffer = NULL;
 
 	job->exitStatus = 0;
 	job->needsCleanup = false;
+	job->notifiedInputAwaitet = false;
 
 	ListJobInfo_Add(manager->jobs, job);
 	return job;
@@ -114,7 +118,11 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 			{
 				if (job->outFile)
 				{
+					for (size_t i = 0; i < String_GetLength(job->outBuffer); i++)
+						putc(String_GetCharAt(job->outBuffer, i), job->outFile);
 
+					putc('\n', job->outFile);
+					fflush(job->outFile);
 				}
 				else
 				{
@@ -122,13 +130,35 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 						printf("%s\n", String_GetCString(job->outBuffer));
 					else
 						printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
-					String_Reset(job->outBuffer);
+
+					fflush(stdout);
 				}
 
+				String_Reset(job->outBuffer);
 				continue;
 			}
 
 			String_AppendChar(job->outBuffer, (char)c);
+		}
+
+		struct pollfd inPipePollFd;
+    	fds.fd = job->inPipe;
+    	fds.events = POLLOUT;
+
+		int ret = poll(&inPipePollFd, 1, 0);
+		assert(ret >= 0);
+
+		if ((inPipePollFd.revets & POLLOUT) != 0)
+		{
+			if (job->notifiedInputAwaitet == false)
+			{
+				printf("[job %li is awaiting input]", job->id);
+				job->notifiedInputAwaitet = true;
+			}
+		}
+		else
+		{
+			job->notifiedInputAwaitet = false
 		}
 
 		pid_t tpid = waitpid(job->pid, &job->exitStatus, WNOHANG);
@@ -289,5 +319,5 @@ int JobInfo_GetExitCode(JobInfo* job)
 	if (WIFEXITED(job->exitStatus))
 		return WEXITSTATUS(job->exitStatus);
 	
-	return -1;
+	return INVALID_EXIT_CODE;
 }

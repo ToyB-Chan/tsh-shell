@@ -33,6 +33,8 @@ bool ShellInfo_IsDirectory(ShellInfo* shell, String* path);
 String* ShellInfo_ResolvePath(ShellInfo* shell, String* path);
 void ShellInfo_Tick(ShellInfo* shell);
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady);
+String* ShellInfo_ExtractInFilePath(ShellInfo* shell);
+String* ShellInfo_ExtractOutFilePath(ShellInfo* shell);
 
 bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params);
 void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params);

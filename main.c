@@ -4,6 +4,8 @@
 #include <termios.h>
 #include <assert.h>
 
+#define UPDATE_TIME_MS 15
+
 int main()
 {
 	// Set the input stream to non-blocking
@@ -33,7 +35,7 @@ int main()
 	while(true)
 	{
 		ShellInfo_Tick(shell);
-		usleep(15000);
+		usleep(UPDATE_TIME_MS * 1000);
 
 		if (shell->exitRequested)
 			break;

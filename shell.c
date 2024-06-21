@@ -161,10 +161,11 @@ void ShellInfo_Tick(ShellInfo* shell)
 	{
 		if (shell->foregroundJob->status >= JS_Finished)
 		{
-			assert(shell->jobManager->nextJobId == shell->foregroundJob->id + 1);
+			assert(shell->foregroundJob->id + 1 == shell->jobManager->nextJobId);
 			JobManager_DestroyJob(shell->jobManager, shell->foregroundJob);
 			shell->foregroundJob = NULL;
 			shell->jobManager->nextJobId--;
+			String_Reset(shell->inputBuffer);
 		}
 
 		return;

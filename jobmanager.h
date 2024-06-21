@@ -37,6 +37,8 @@ typedef struct JobInfo
 	
 	int exitStatus;
 	bool needsCleanup;
+
+	bool notifiedInputAwaitet;
 } JobInfo;
 
 DECLARE_LIST(ListJobInfo, JobInfo*);
@@ -48,7 +50,7 @@ typedef struct JobManager
 
 JobManager* JobManager_New();
 void JobManager_Destroy(JobManager* manager);
-JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params);
+JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params, FILE* inFile, FILE* outFile);
 void JobManager_DestroyJob(JobManager* manager, JobInfo* job);
 JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId);
 void JobManager_Tick(JobManager* manager, ShellInfo* shell);
