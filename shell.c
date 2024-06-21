@@ -178,6 +178,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 	{
 		// Draw our input string
 		printf("%s", String_GetCString(shell->inputBuffer));
+		ShellInfo_PrintCursorOffset(shell);
 		fflush(stdout);
 
 		if (shell->foregroundJob->status >= JS_Finished)
@@ -207,6 +208,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 
 	// Redraw the promt
 	printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
+	ShellInfo_PrintCursorOffset(shell);
 	fflush(stdout);
 
 	// User commited the command via newline, execute it
@@ -272,11 +274,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT))
 			{
 				if (shell->cursorPosition > 0)
-				{
 					shell->cursorPosition--;
-					printf(ANSI_MOVE_CURSOR_LEFT);
-					fflush(stdout);
-				}
 				
 				continue;
 			}
@@ -284,11 +282,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_RIGHT))
 			{
 				if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
-				{
 					shell->cursorPosition++;
-					printf(ANSI_MOVE_CURSOR_RIGHT);
-					fflush(stdout);
-				}
 				
 				continue;
 			}
@@ -299,6 +293,14 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
 		shell->cursorPosition++;
 	}
+}
+
+void ShellInfo_PrintCursorOffset(ShellInfo* shell)
+{
+	assert(shell);
+	size_t offsetLeft = shell->cursorPosition - String_GetLength(shell->inputBuffer);
+	for (int i = 0; i < offsetLeft; i++)
+		printf(ANSI_MOVE_CURSOR_LEFT);
 }
 
 bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
