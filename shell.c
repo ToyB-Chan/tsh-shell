@@ -478,7 +478,6 @@ void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
 	ListString_Insert(params, resolvedPath, 0);
 
-
 	bool invalidInput;
 
 	FILE* inFile = NULL;
