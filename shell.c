@@ -174,6 +174,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 			String_Reset(shell->inputBuffer);
 		}
 
+		printf("%s", String_GetCString(shell->inputBuffer));
 		return;
 	}
 

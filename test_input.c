@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {	
-	printf("I want some input: \n");
+	printf("I want some input: ");
 	fflush(stdout);
 
 	char buffer[16];

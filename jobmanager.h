@@ -36,7 +36,7 @@ typedef struct JobInfo
 	int exitStatus;
 	bool needsCleanup;
 
-	bool notifiedInputAwaitet;
+	bool lastOutputReadFailed;
 } JobInfo;
 
 DECLARE_LIST(ListJobInfo, JobInfo*);

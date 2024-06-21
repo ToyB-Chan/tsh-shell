@@ -62,7 +62,7 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 
 	job->exitStatus = 0;
 	job->needsCleanup = false;
-	job->notifiedInputAwaitet = false;
+	job->lastOutputReadFailed = false;
 
 	ListJobInfo_Add(manager->jobs, job);
 	return job;
@@ -108,12 +108,25 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		// Write Output
 		while(1)
 		{
-			char c;
+			char c = '\0';
 			int bytesRead = read(job->outPipe[0], &c, 1);
+			bool forceFlush = false;
 			if (bytesRead != 1)
-				break;
+			{
+				if (job->lastOutputReadFailed == false)
+				{
+					job->lastOutputReadFailed = true;
+					break;
+				}
 
-			if (c == '\n')
+				forceFlush = true; // force flush because the process might be waiting for something
+			}
+			else
+			{
+				job->lastOutputReadFailed = false;
+			}
+
+			if (c == '\n' || (forceFlush && String_GetLength(job->outBuffer) > 0))
 			{
 				if (job == shell->foregroundJob)
 					printf("%s\n", String_GetCString(job->outBuffer));
