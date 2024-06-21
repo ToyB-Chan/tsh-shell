@@ -134,7 +134,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		{
 			int bytesWritten = write(job->inPipe[1], shell->inputBuffer, String_GetLength(shell->inputBuffer));
 
-			if (bytesWritten > 0);
+			if (bytesWritten > 0)
 				String_Reset(shell->inputBuffer);
 		}
 
