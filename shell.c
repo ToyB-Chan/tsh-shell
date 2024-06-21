@@ -499,7 +499,7 @@ void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
 	}
 
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
-	JobInfo_Execute(job, shell, NULL, NULL);
+	JobInfo_Execute(job, shell, inFile, outFile);
 	printf("[created job with id %li]\n", job->id);
 	PRINT_SUCCESS();
 }
