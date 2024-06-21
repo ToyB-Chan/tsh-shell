@@ -166,18 +166,17 @@ void ShellInfo_Tick(ShellInfo* shell)
 			shell->foregroundJob = NULL;
 			shell->jobManager->nextJobId--;
 		}
-		else
+		else if(commandReady)
 		{
 			for (size_t i = 0; i < shell->inputBuffer; i++)
 			{
 				String_AppendChar(shell->foregroundJob->inBuffer, String_GetCharAt(shell->inputBuffer, i));
 			}
-			
-			if (commandReady)
-				String_AppendChar(shell->foregroundJob->inBuffer, '\n');
+
+			String_AppendChar(shell->foregroundJob->inBuffer, '\n');
+			String_Reset(shell->inputBuffer);
 		}
 
-		String_Reset(shell->inputBuffer);
 		return;
 	}
 
