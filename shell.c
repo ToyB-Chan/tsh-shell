@@ -291,8 +291,6 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT) || String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_RIGHT))
 				continue;
 #endif
-
-			assert(false); // we should never get here
 		}
 
 		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
