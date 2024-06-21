@@ -273,19 +273,17 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			{
 				if (shell->cursorPosition > 0)
 					shell->cursorPosition--;
-				
-				continue;
+				else
+					continue;
 			}
 
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_RIGHT))
 			{
 				if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
 					shell->cursorPosition++;
-				
-				continue;
+				else
+					continue;
 			}
-
-			assert(false); // we should never get here
 		}
 
 		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
