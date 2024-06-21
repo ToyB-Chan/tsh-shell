@@ -305,7 +305,7 @@ void ShellInfo_PrintCursorOffset(ShellInfo* shell)
 	for (int i = 0; i < offsetLeft; i++)
 		printf(ANSI_MOVE_CURSOR_LEFT);
 }
-/*
+
 String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput)
 {
 	String* path = NULL;
@@ -373,9 +373,8 @@ String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool*
 
 	return NULL;
 }
-*/
 
-bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params, bool* outInvalidInput)
+bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 {
 	assert(shell);
 	assert(params && params->numElements > 0);
@@ -465,8 +464,8 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	ListString_Insert(params, resolvedPath, 0);
 
 	bool invalidInput;
+
 	FILE* inFile = NULL;
-	/*
 	invalidInput = false;
 	String* inPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
 	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe in",);
@@ -475,11 +474,8 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
 		inFile = fopen(inPath, "r");
 	}
-	*/
 
 	FILE* outFile = NULL;
-	
-	/*
 	invalidInput = false;
 	String* outPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
 	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
@@ -488,8 +484,6 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
 		outFile = fopen(outPath, "r");
 	}
-	*/
-
 
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
 	shell->foregroundJob = job;
