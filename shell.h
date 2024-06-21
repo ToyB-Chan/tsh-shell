@@ -31,7 +31,7 @@ void ShellInfo_Destroy(ShellInfo* shell);
 bool ShellInfo_IsFile(ShellInfo* shell, String* path);
 bool ShellInfo_IsExecutable(ShellInfo* shell, String* path);
 bool ShellInfo_IsDirectory(ShellInfo* shell, String* path);
-String* ShellInfo_ResolvePath(ShellInfo* shell, String* path);
+String* ShellInfo_ResolvePath(ShellInfo* shell, String* path, bool resolveEnvVar);
 void ShellInfo_Tick(ShellInfo* shell);
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady);
 String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput);

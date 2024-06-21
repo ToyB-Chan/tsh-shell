@@ -90,7 +90,7 @@ bool ShellInfo_IsDirectory(ShellInfo* shell, String* path)
 	return S_ISDIR(info.st_mode);
 }
 
-String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
+String* ShellInfo_ResolvePath(ShellInfo* shell, String* path,, bool resolveEnvVar)
 {
 	assert(shell);
 	assert(path);
@@ -106,6 +106,9 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 
 	if (ShellInfo_IsFile(shell, realPath) && ShellInfo_IsExecutable(shell, realPath))
 		return realPath;
+
+	if (!resolveEnvVar)
+		return String_Copy(path);
 
 	char* pathEnv = getenv("PATH");
 	if (!pathEnv)
@@ -303,7 +306,7 @@ String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* 
 
 	if (path)
 	{
-		String* realPath = ShellInfo_ResolvePath(shell, path);
+		String* realPath = ShellInfo_ResolvePath(shell, path, false);
 		String_Destroy(ListString_Remove(params, index)); // remove pipe symbol
 		String_Destroy(ListString_Remove(params, index)); // remove path
 		return realPath;
@@ -337,7 +340,7 @@ String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool*
 
 	if (path)
 	{
-		String* realPath = ShellInfo_ResolvePath(shell, path);
+		String* realPath = ShellInfo_ResolvePath(shell, path, false);
 		String_Destroy(ListString_Remove(params, index)); // remove pipe symbol
 		String_Destroy(ListString_Remove(params, index)); // remove path
 		return realPath;
@@ -428,7 +431,7 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no executable given",);
 
 	String* orgPath = ListString_Remove(params, 0);
-	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
+	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath, true);
 	String_Destroy(orgPath);
 
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, resolvedPath), "executable does not exist",);
@@ -468,7 +471,7 @@ void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job executable given",);
 
 	String* orgPath = ListString_Remove(params, 0);
-	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
+	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath, true);
 	String_Destroy(orgPath);
 
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, resolvedPath), "executable does not exist",);
