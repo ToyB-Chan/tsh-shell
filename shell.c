@@ -298,7 +298,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 void ShellInfo_PrintCursorOffset(ShellInfo* shell)
 {
 	assert(shell);
-	size_t offsetLeft = shell->cursorPosition - String_GetLength(shell->inputBuffer);
+	size_t offsetLeft = String_GetLength(shell->inputBuffer) - shell->cursorPosition;
 	for (int i = 0; i < offsetLeft; i++)
 		printf(ANSI_MOVE_CURSOR_LEFT);
 }
