@@ -142,8 +142,8 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		}
 
 		struct pollfd inPipePollFd;
-    	fds.fd = job->inPipe;
-    	fds.events = POLLOUT;
+    	inPipePollFd.fd = job->inPipe;
+    	inPipePollFd.events = POLLOUT;
 
 		int ret = poll(&inPipePollFd, 1, 0);
 		assert(ret >= 0);
