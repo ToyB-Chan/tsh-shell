@@ -285,7 +285,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 				continue;
 			}
 
-			assert(false) // we should never get here
+			assert(false); // we should never get here
 		}
 
 		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
