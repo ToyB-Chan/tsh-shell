@@ -10,6 +10,12 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+#define ANSI_RESET_LINE "\033[2K\r"
+#define ANSI_MOVE_UP "\033[A"
+
+#define ASCII_BACKSPACE 8
+#define ASCII_DELETE 127
+
 ShellInfo* ShellInfo_New()
 {
 	ShellInfo* shell = (ShellInfo*)malloc(sizeof(ShellInfo));
@@ -124,15 +130,14 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 
 void ShellInfo_Tick(ShellInfo* shell)
 {
-	printf("\033[2K\r"); // clear line (effectively removing the shell prompt so we can redraw it)
-	JobManager_Tick(shell->jobManager, shell);		
+	printf(ANSI_RESET_LINE); // Remove the shell prompt so jobs can print cleanly
+	JobManager_Tick(shell->jobManager, shell);
 
-	// only handle promt and input if we are not currently waiting for a job
+	// We are currently waiting for a job, don't handle any promt or input
 	if (shell->waitForJob != NULL)
 	{
 		if (shell->waitForJob->status >= JS_Finished)
 		{
-		
 			shell->waitForJob = NULL;
 			printf("[waiting finished]\n");
 			PRINT_SUCCESS();
@@ -141,12 +146,11 @@ void ShellInfo_Tick(ShellInfo* shell)
 		return;
 	}
 
-	// handle input
-	bool cmdReady;
-	ShellInfo_UpdateInputBuffer(shell, &cmdReady);
+	// Handle input from stdin
+	bool commandReady;
+	ShellInfo_UpdateInputBuffer(shell, &commandReady);
 
-
-	// only show promt if no foreground job is running
+	// We are running a foreground job, don't bother drawing the promt or executing commands
 	if (shell->foregroundJob != NULL)
 	{
 		if (shell->foregroundJob->status >= JS_Finished)
@@ -160,10 +164,12 @@ void ShellInfo_Tick(ShellInfo* shell)
 		return;
 	}
 
+	// Redraw the promt
 	printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
 	fflush(stdout);
 
-	if (cmdReady)
+	// User commited the command via newline, execute it
+	if (commandReady)
 	{
 		printf("\n");
 		ListString* params = String_Split(shell->inputBuffer, ' ');
@@ -193,13 +199,12 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 
 		if (c == '\n')
 		{
-			printf("\033[A"); // revert the newline by going a line up again
+			printf(ANSI_MOVE_UP); // Revert the newline by going a line up again
 			*outCommandReady = true;
 			return;
 		}
 
-		// handle ascii backspace and acsii delete
-		if (c == 8 || c == 127)
+		if (c == ASCII_BACKSPACE || c == ASCII_DELETE)
 		{
 			if (String_GetLength(shell->inputBuffer) > 0)
 				String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
