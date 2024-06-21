@@ -257,7 +257,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 		if (c == ASCII_BACKSPACE || c == ASCII_DELETE)
 		{
 			if (shell->cursorPosition > 0)
-				String_RemoveAt(shell->inputBuffer, shell->cursorPosition);
+				String_RemoveAt(shell->inputBuffer, shell->cursorPosition - 2);
 			continue;
 		}
 
