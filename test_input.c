@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
 	buffer[i + 1] = '\0';
 
-	printf("Your input was: %s\n", buffer);
+	printf("\nYour input was: %s\n", buffer);
 	printf("Bye!\n");
 	fflush(stdout);
 	return 0;
