@@ -100,7 +100,7 @@ ListString* String_Split(String* str, char delimiter)
 bool String_EqualsCString(String* str, char* cstr)
 {
 	size_t cstrLength = GetCStringLength(cstr);
-	if (String_GetLength(str) !=  cstrLength)
+	if (String_GetLength(str) != cstrLength)
 		return false;
 
 	for (size_t i = 0; i < cstrLength; i++)
