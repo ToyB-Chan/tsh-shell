@@ -4,6 +4,7 @@
 int main(int argc, char** argv)
 {	
 	printf("I want some input: \n");
+	fflush(stdout);
 
 	char buffer[1024];
 	int i = 0;
@@ -20,5 +21,6 @@ int main(int argc, char** argv)
 
 	printf("Your input was: %s\n", buffer);
 	printf("Bye!\n");
+	fflush(stdout);
 	return 0;
 }
