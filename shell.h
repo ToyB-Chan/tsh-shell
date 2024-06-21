@@ -48,4 +48,5 @@ void ShellInfo_CommandExit(ShellInfo* shell, ListString* params);
 void ShellInfo_CommandCd(ShellInfo* shell, ListString* params);
 void ShellInfo_CommandPwd(ShellInfo* shell, ListString* params);
 void ShellInfo_CommandClear(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandSend(ShellInfo* shell, ListString* params);
 

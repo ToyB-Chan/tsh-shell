@@ -168,14 +168,10 @@ void ShellInfo_Tick(ShellInfo* shell)
 		}
 		else if(commandReady)
 		{
-			for (size_t i = 0; i < String_GetLength(shell->inputBuffer); i++)
-			{
-				String_AppendChar(shell->foregroundJob->inBuffer, String_GetCharAt(shell->inputBuffer, i));
-			}
-
+			String_Destroy(shell->foregroundJob->inBuffer);
+			shell->foregroundJob->inBuffer = String_Copy(shell->inputBuffer);
 			String_AppendChar(shell->foregroundJob->inBuffer, '\n');
 			String_Reset(shell->inputBuffer);
-			printf("Wrote!\n");
 		}
 
 		return;
@@ -300,6 +296,12 @@ bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 		return true;
 	}
 
+	if (String_EqualsCString(cmd, "send"))
+	{
+		ShellInfo_CommandSend(shell, params);
+		return true;
+	}
+
 	ListString_Insert(params, cmd, 0);
 	return false;
 }
@@ -380,6 +382,7 @@ void ShellInfo_CommandInfo(ShellInfo* shell, ListString* params)
 
 void ShellInfo_CommandWait(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
 
 	int id = -1;
@@ -396,6 +399,7 @@ void ShellInfo_CommandWait(ShellInfo* shell, ListString* params)
 
 void ShellInfo_CommandKill(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
 
 	int id = -1;
@@ -414,12 +418,14 @@ void ShellInfo_CommandKill(ShellInfo* shell, ListString* params)
 
 void ShellInfo_CommandExit(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
 	shell->exitRequested = true;
 	PRINT_SUCCESS();
 }
 
 void ShellInfo_CommandCd(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
 	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no directory given",);
 
 	String* path = ListString_Get(params, 0);
@@ -481,14 +487,36 @@ void ShellInfo_CommandCd(ShellInfo* shell, ListString* params)
 
 void ShellInfo_CommandPwd(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
 	printf("%s\n", String_GetCString(shell->directory));
 	PRINT_SUCCESS();
 }
 
 void ShellInfo_CommandClear(ShellInfo* shell, ListString* params)
 {
+	assert(shell);
 	printf(ANSI_CLEAR_SCREEN);
 	printf(ANSI_RESET_CURSOR);
 	fflush(stdout);
 	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandSend(ShellInfo* shell, ListString* params)
+{
+	assert(shell);
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
+
+	int id = -1;
+	CHECK_PRINT_ERROR_RETURN(String_Atoi(ListString_Get(params, 0), &id), "job id parameter is not a number",);
+
+	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
+	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 1, "nothing to send",);
+
+	String* idStr = ListString_Remove(params, 0);
+	String* sendStr = String_Join(params, ' ');
+	ListString_Insert(params, idStr, 0);
+
+	String_Destroy(job->inBuffer);
+	job->inBuffer = sendStr;
 }
