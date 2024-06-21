@@ -43,7 +43,7 @@ void JobManager_Destroy(JobManager* manager)
 	free(manager);
 }
 
-JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params, FILE* inFile, FILE* outFile)
+JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params)
 {
 	assert(manager);
 	assert(params);
@@ -56,8 +56,6 @@ JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params, FILE* inF
 	job->status = JS_Pending;
 
 	job->pid = 0;
-	job->inFile = inFile;
-	job->outFile = outFile;
 
 	job->inBuffer = NULL;
 	job->outBuffer = NULL;
@@ -107,6 +105,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		if (!job->needsCleanup)
 			continue;
 
+		// Write Output
 		while(1)
 		{
 			char c;
@@ -116,23 +115,12 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 
 			if (c == '\n')
 			{
-				if (job->outFile)
-				{
-					for (size_t i = 0; i < String_GetLength(job->outBuffer); i++)
-						putc(String_GetCharAt(job->outBuffer, i), job->outFile);
-
-					putc('\n', job->outFile);
-					fflush(job->outFile);
-				}
+				if (job == shell->foregroundJob)
+					printf("%s\n", String_GetCString(job->outBuffer));
 				else
-				{
-					if (job == shell->foregroundJob)
-						printf("%s\n", String_GetCString(job->outBuffer));
-					else
-						printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
+					printf("[job %li]: %s\n", job->id, String_GetCString(job->outBuffer));
 
-					fflush(stdout);
-				}
+				fflush(stdout);
 
 				String_Reset(job->outBuffer);
 				continue;
@@ -141,24 +129,13 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 			String_AppendChar(job->outBuffer, (char)c);
 		}
 
-		struct pollfd inPipePollFd;
-    	inPipePollFd.fd = job->inPipe[1];
-    	inPipePollFd.events = POLLOUT;
-
-		int ret = poll(&inPipePollFd, 1, 0);
-		assert(ret >= 0);
-
-		if ((inPipePollFd.revents & POLLOUT) != 0)
+		// Write Input (only if its the foreground job)
+		if (job == shell->foregroundJob)
 		{
-			if (job->notifiedInputAwaitet == false)
-			{
-				printf("[job %li is awaiting input]", job->id);
-				job->notifiedInputAwaitet = true;
-			}
-		}
-		else
-		{
-			job->notifiedInputAwaitet = false;
+			int bytesWritten = write(job->inPipe[1], shell->inputBuffer, String_GetLength(shell->inputBuffer));
+
+			if (bytesWritten > 0);
+				String_Reset(shell->inputBuffer);
 		}
 
 		pid_t tpid = waitpid(job->pid, &job->exitStatus, WNOHANG);
@@ -178,7 +155,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 	
 }
 
-void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
+void JobInfo_Execute(JobInfo* job, ShellInfo* shell, FILE* inFile, FILE* outFile)
 {
 	assert(job);
 	assert(job->pid == 0);
@@ -187,10 +164,21 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	pipe(job->inPipe);
 	pipe(job->outPipe);
 
-	int flags = fcntl(job->outPipe[0], F_GETFL, 0);
-	assert(flags >= 0);
-	int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
-	assert(ret >= 0);
+	// Make input writing non-blocking
+	{
+		int flags = fcntl(job->inPipe[1], F_GETFL, 0);
+		assert(flags >= 0);
+		int ret = fcntl(job->inPipe[1], F_SETFL, flags | O_NONBLOCK);
+		assert(ret >= 0);
+	}
+
+	// Make output reading non-blocking
+	{
+		int flags = fcntl(job->outPipe[0], F_GETFL, 0);
+		assert(flags >= 0);
+		int ret = fcntl(job->outPipe[0], F_SETFL, flags | O_NONBLOCK);
+		assert(ret >= 0);
+	}
 
 	job->inBuffer = String_New();
 	job->outBuffer = String_New();
@@ -198,9 +186,26 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell)
 	pid_t cpid = fork();
 	if (cpid == 0)
 	{
-		dup2(job->inPipe[0], STDIN_FILENO);
-		dup2(job->outPipe[1], STDOUT_FILENO);
+		if (inFile)
+		{
+			dup2(fileno(inFile), STDIN_FILENO);
+			fclose(inFile);
+		}
+		else
+		{
+			dup2(job->inPipe[0], STDIN_FILENO);
+		}
 
+		if (outFile)
+		{
+			dup2(fileno(outFile), STDOUT_FILENO);
+			fclose(outFile);
+		}
+		else
+		{
+			dup2(job->outPipe[1], STDOUT_FILENO);
+		}
+	
 		close(job->inPipe[0]);
 		close(job->inPipe[1]);
 		close(job->outPipe[0]);

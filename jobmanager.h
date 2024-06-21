@@ -29,10 +29,7 @@ typedef struct JobInfo
 	pid_t pid;
 	int inPipe[2];
 	int outPipe[2];
-	FILE* inFile;
-	FILE* outFile;
 
-	String* inBuffer;
 	String* outBuffer;
 	
 	int exitStatus;
