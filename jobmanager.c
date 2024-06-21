@@ -128,7 +128,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 				job->lastOutputReadFailed = false;
 			}
 
-			if (c == '\n' || (forceFlush && String_GetLength(job->outBuffer) > 0))
+			if (c == '\n' || (forceFlush && String_GetLength(job->outBuffer) > 1))
 			{
 				printf("mytimetoshine!!");
 				if (job == shell->foregroundJob)
