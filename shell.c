@@ -275,7 +275,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
 				shell->cursorPosition++;
 			else
-				printf(ANSI_CURSOR_LEFT) // stop cursor from escaping
+				printf(ANSI_CURSOR_LEFT); // stop cursor from escaping
 			
 			continue;
 		}
