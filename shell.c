@@ -219,10 +219,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 	}
 
 	if (g_abortRequested)
-	{
 		g_abortRequested = false;
-		shell->exitRequested = true;
-	}
 }
 
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
