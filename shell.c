@@ -53,7 +53,7 @@ ShellInfo* ShellInfo_New()
 	memset(&sa, 0, sizeof(sigaction));
 	sa.sa_handler = SignalHandlerAbort;
 	int ret = sigaction(SIGINT, &sa, NULL);
-	assert(ret);
+	assert(ret >= 0);
 
 	return shell;
 }
