@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -std=gnu11 -ggdb
+CFLAGS = -Wall -std=gnu11
 
 tsh:
 	$(CC) $(CFLAGS) -o tsh jobmanager.c main.c shell.c string.c signalhandler.c
