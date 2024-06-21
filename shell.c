@@ -12,12 +12,17 @@
 #include <signal.h>
 
 #define ANSI_RESET_LINE "\033[2K\r"
-#define ANSI_MOVE_UP "\033[A"
+#define ANSI_MOVE_CURSOR_UP "\033[A"
 #define ANSI_CLEAR_SCREEN "\033[2J"
 #define ANSI_RESET_CURSOR "\033[H"
+#define ANSI_CURSOR_LEFT "\033[D";
 
 #define ASCII_BACKSPACE 8
 #define ASCII_DELETE 127
+#define ASCII_LEFT 37
+#define ASCII_UP 38
+#define ASCII_RIGHT 39
+#define ASCII_DOWN 40
 
 ShellInfo* ShellInfo_New()
 {
@@ -25,6 +30,7 @@ ShellInfo* ShellInfo_New()
 	shell->directory = String_New();
 	shell->jobManager = JobManager_New();
 	shell->inputBuffer = String_New();
+	shell->cursorPosition = 0;
 	shell->waitForJob = NULL;
 	shell->foregroundJob = NULL;
 	shell->exitRequested = false;
@@ -187,6 +193,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 			shell->foregroundJob->inBuffer = String_Copy(shell->inputBuffer);
 			String_AppendChar(shell->foregroundJob->inBuffer, '\n');
 			String_Reset(shell->inputBuffer);
+			shell->cursorPosition = 0;
 		}
 		else if(g_abortRequested)
 		{
@@ -208,6 +215,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 		printf("\n");
 		ListString* params = String_Split(shell->inputBuffer, ' ');
 		String_Reset(shell->inputBuffer);
+		shell->cursorPosition = 0;
 
 		bool success = ShellInfo_ExecuteBuiltinCommand(shell, params);
 
@@ -239,7 +247,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 
 		if (c == '\n')
 		{
-			printf(ANSI_MOVE_UP); // Revert the newline by going a line up again
+			printf(ANSI_MOVE_CURSOR_UP); // Revert the newline by going a line up again
 			*outCommandReady = true;
 			return;
 		}
@@ -251,7 +259,29 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			continue;
 		}
 
-		String_AppendChar(shell->inputBuffer, (char)c);
+		if (c == ASCII_UP ||c == ASCII_DOWN)
+			continue;
+
+		if (c == ASCII_LEFT)
+		{
+			if (shell->cursorPosition > 0)
+				shell->cursorPosition--;
+			
+			continue;
+		}
+
+		if (c == ASCII_RIGHT)
+		{
+			if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
+				shell->cursorPosition++;
+			else
+				printf(ANSI_CURSOR_LEFT) // stop cursor from escaping
+			
+			continue;
+		}
+
+		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
+		shell->cursorPosition++;
 	}
 }
 

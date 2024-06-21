@@ -19,6 +19,7 @@ typedef struct ShellInfo
 	String* directory;
 	JobManager* jobManager;
 	String* inputBuffer;
+	size_t cursorPosition;
 
 	JobInfo* waitForJob;
 	JobInfo* foregroundJob;

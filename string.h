@@ -14,6 +14,7 @@ DECLARE_LIST(ListString, String*);
 
 String* String_New();
 void String_AppendChar(String* str, char c);
+void String_InsertChar(String* str, char c, size_t index);
 void String_RemoveAt(String* str, size_t index);
 size_t String_GetLength(String* str);
 char* String_GetCString(String* str);
