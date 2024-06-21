@@ -49,7 +49,12 @@ ShellInfo* ShellInfo_New()
 	String_AppendCString(shell->directory, buffer);
 	free(buffer);
 
-	signal(SIGINT, SignalHandlerAbort);
+	struct sigaction sg;
+	memset(&sa, 0, sizeof(sigaction));
+	sa.sa_handler = SignalHandlerAbort;
+	int ret = sigaction(SIGINT, &sa, NULL);
+	assert(ret);
+
 	return shell;
 }
 
@@ -139,9 +144,6 @@ void ShellInfo_Tick(ShellInfo* shell)
 {
 	assert(shell);
 	assert(!shell->exitRequested);
-
-	if (g_abortRequested)
-		printf("!!abort reqeusted!!\n");
 
 	printf(ANSI_RESET_LINE); // Remove the shell prompt so jobs can print cleanly
 	JobManager_Tick(shell->jobManager, shell);
