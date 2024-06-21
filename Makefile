@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -std=gnu11 -ggdb
 
-tsh: jobmanager.c main.c shell.c string.c
-	$(CC) $(CFLAGS) -o tsh jobmanager.c main.c shell.c string.c
+tsh:
+	$(CC) $(CFLAGS) -o tsh jobmanager.c main.c shell.c string.c signalhandler.c
 	$(CC) $(CFLAGS) -o test_printstdout test_printstdout.c
 	$(CC) $(CFLAGS) -o test_wait test_wait.c
 	$(CC) $(CFLAGS) -o test_input test_input.c
