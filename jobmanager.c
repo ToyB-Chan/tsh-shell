@@ -24,10 +24,15 @@ void JobManager_Destroy(JobManager* manager)
 	for (size_t i = 0; i < manager->jobs->numElements; i++)
 	{
 		JobInfo* job = ListJobInfo_Get(manager->jobs, i);
-		job->status = JS_Killed;
-		kill(job->pid, SIGKILL);
 
-		JobInfo_Cleanup(job);
+		if (job->status <= JS_Running);
+		{
+			job->status = JS_Killed;
+			kill(job->pid, SIGKILL);
+
+			JobInfo_Cleanup(job);
+		}
+
 		JobManager_DestroyJob(manager, job);
 	}
 
