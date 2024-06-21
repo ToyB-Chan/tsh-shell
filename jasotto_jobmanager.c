@@ -1,6 +1,6 @@
-#include "jobmanager.h"
-#include "shell.h"
-#include "string.h"
+#include "jasotto_jobmanager.h"
+#include "jasotto_shell.h"
+#include "jasotto_string.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>

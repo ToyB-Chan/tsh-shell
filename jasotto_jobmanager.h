@@ -1,7 +1,7 @@
 #pragma once
 
-#include "stdint.h"
-#include "list.h"
+#include "jasotto_list.h"
+#include <stdint.h>
 #include <stdatomic.h>
 #include <sys/types.h>
 #include <stdbool.h>

@@ -21,6 +21,13 @@
 		"unistd.h": "c",
 		"fcntl.h": "c",
 		"types.h": "c",
-		"signalhandler.h": "c"
+		"signalhandler.h": "c",
+		"jasotto_shell.h": "c",
+		"stdlib.h": "c",
+		"jasotto_jobmanager.h": "c",
+		"stdint.h": "c",
+		"jasotto_string.h": "c",
+		"jasotto_signalhandler.h": "c",
+		"jasotto_list.h": "c"
 	}
 }

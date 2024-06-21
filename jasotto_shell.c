@@ -1,7 +1,7 @@
-#include "shell.h"
-#include "string.h"
-#include "jobmanager.h"
-#include "signalhandler.h"
+#include "jasotto_shell.h"
+#include "jasotto_string.h"
+#include "jasotto_jobmanager.h"
+#include "jasotto_signalhandler.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>

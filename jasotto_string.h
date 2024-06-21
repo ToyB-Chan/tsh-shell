@@ -1,6 +1,6 @@
 #pragma once
 
-#include "list.h"
+#include "jasotto_list.h"
 #include <stdbool.h>
 
 DECLARE_LIST(ListChar, char);

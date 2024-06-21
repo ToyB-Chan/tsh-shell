@@ -1,4 +1,4 @@
-#include "string.h"
+#include "jasotto_string.h"
 #include <stdio.h>
 
 DEFINE_LIST(ListChar, char);

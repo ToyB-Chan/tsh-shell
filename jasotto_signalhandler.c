@@ -1,4 +1,4 @@
-#include "signalhandler.h"
+#include "jasotto_signalhandler.h"
 
 bool g_abortRequested = false;
 
