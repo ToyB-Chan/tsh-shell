@@ -477,7 +477,7 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 
 	FILE* outFile = NULL;
 	invalidInput = false;
-	String* outPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
+	String* outPath = ShellInfo_ExtractOutFilePath(shell, params, &invalidInput);
 	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
 	if (outPath)
 	{
