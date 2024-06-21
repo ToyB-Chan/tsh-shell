@@ -305,7 +305,7 @@ void ShellInfo_PrintCursorOffset(ShellInfo* shell)
 	for (int i = 0; i < offsetLeft; i++)
 		printf(ANSI_MOVE_CURSOR_LEFT);
 }
-
+/*
 String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput)
 {
 	String* path = NULL;
@@ -373,7 +373,7 @@ String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool*
 
 	return NULL;
 }
-
+*/
 
 bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params, bool* outInvalidInput))
 {
