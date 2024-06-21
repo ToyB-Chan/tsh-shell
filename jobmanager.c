@@ -5,8 +5,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <errno.h>
-#include <poll.h>
 
 #define INVALID_EXIT_CODE -1
 
