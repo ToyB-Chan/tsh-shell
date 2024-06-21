@@ -156,9 +156,13 @@ void ShellInfo_Tick(ShellInfo* shell)
 	bool commandReady;
 	ShellInfo_UpdateInputBuffer(shell, &commandReady);
 
-	// We are running a foreground job, don't bother drawing the promt or executing commands
+	// We are running a foreground job, don't bother drawing the promt or executing commands but instead redirect the input
 	if (shell->foregroundJob != NULL)
 	{
+		// Draw our input string
+		printf("%s", String_GetCString(shell->inputBuffer));
+		flush(stdout);
+
 		if (shell->foregroundJob->status >= JS_Finished)
 		{
 			assert(shell->foregroundJob->id + 1 == shell->jobManager->nextJobId);
@@ -174,7 +178,6 @@ void ShellInfo_Tick(ShellInfo* shell)
 			String_Reset(shell->inputBuffer);
 		}
 
-		printf("%s", String_GetCString(shell->inputBuffer));
 		return;
 	}
 
