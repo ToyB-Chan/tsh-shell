@@ -118,8 +118,10 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 					job->lastOutputReadFailed = true;
 					break;
 				}
-
-				forceFlush = true; // force flush because the process might be waiting for something
+				else
+				{
+					forceFlush = true; // force flush because the process might be waiting for input
+				}
 			}
 			else
 			{
@@ -128,6 +130,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 
 			if (c == '\n' || (forceFlush && String_GetLength(job->outBuffer) > 0))
 			{
+				printf("mytimetoshine!!");
 				if (job == shell->foregroundJob)
 					printf("%s\n", String_GetCString(job->outBuffer));
 				else
