@@ -12,6 +12,8 @@
 
 #define ANSI_RESET_LINE "\033[2K\r"
 #define ANSI_MOVE_UP "\033[A"
+#define ANSI_CLEAR_SCREEN "\033[2J"
+#define ANSI_RESET_CURSOR "\033[H"
 
 #define ASCII_BACKSPACE 8
 #define ASCII_DELETE 127
@@ -474,6 +476,8 @@ void ShellInfo_CommandPwd(ShellInfo* shell, ListString* params)
 
 void ShellInfo_CommandClear(ShellInfo* shell, ListString* params)
 {
-	printf("\033[2J\033[H");
+	printf(ANSI_CLEAR_SCREEN)
+	printf(ANSI_RESET_CURSOR)
+	fflush(stdout);
 	PRINT_SUCCESS();
 }

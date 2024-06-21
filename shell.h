@@ -25,10 +25,8 @@ typedef struct ShellInfo
 	bool exitRequested;
 } ShellInfo;
 
-
 ShellInfo* ShellInfo_New();
 void ShellInfo_Destroy(ShellInfo* shell);
-bool ShellInfo_Execute(ShellInfo* shell, ListString* params, int* outStatusCode);
 bool ShellInfo_IsFile(ShellInfo* shell, String* path);
 bool ShellInfo_IsExecutable(ShellInfo* shell, String* path);
 bool ShellInfo_IsDirectory(ShellInfo* shell, String* path);
