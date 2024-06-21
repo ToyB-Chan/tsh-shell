@@ -272,18 +272,26 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT))
 			{
 				if (shell->cursorPosition > 0)
+				{
 					shell->cursorPosition--;
-				else
-					continue;
+					printf(ANSI_MOVE_CURSOR_LEFT);
+				}
+				
+				continue;
 			}
 
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_RIGHT))
 			{
 				if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
+				{
 					shell->cursorPosition++;
-				else
-					continue;
+					printf(ANSI_MOVE_CURSOR_RIGHT);
+				}
+				
+				continue;
 			}
+
+			assert(false); // we should never get here
 		}
 
 		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
