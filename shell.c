@@ -11,18 +11,18 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+#define ANSI_ESCAPE_CODE "\033"
+
 #define ANSI_RESET_LINE "\033[2K\r"
-#define ANSI_MOVE_CURSOR_UP "\033[A"
 #define ANSI_CLEAR_SCREEN "\033[2J"
 #define ANSI_RESET_CURSOR "\033[H"
-#define ANSI_CURSOR_LEFT "\033[D"
+#define ANSI_MOVE_CURSOR_LEFT "\033[D"
+#define ANSI_MOVE_CURSOR_UP "\033[A"
+#define ANSI_MOVE_CURSOR_RIGHT "\033[C"
+#define ANSI_MOVE_CURSOR_DOWN "\033[B"
 
 #define ASCII_BACKSPACE 8
 #define ASCII_DELETE 127
-#define ASCII_LEFT 37
-#define ASCII_UP 38
-#define ASCII_RIGHT 39
-#define ASCII_DOWN 40
 
 ShellInfo* ShellInfo_New()
 {
@@ -259,25 +259,33 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			continue;
 		}
 
-		if (c == ASCII_UP ||c == ASCII_DOWN)
-			continue;
-
-		if (c == ASCII_LEFT)
+		if (c == ANSI_ESCAPE_CODE)
 		{
-			if (shell->cursorPosition > 0)
-				shell->cursorPosition--;
-			
-			continue;
-		}
+			String* ansiSeqeunce = String_New();
+			String_AppendChar(ansiSeqeunce, c);
+			String_AppendChar(ansiSeqeunce, (char)getc(stdin));
+			String_AppendChar(ansiSeqeunce, (char)getc(stdin));
 
-		if (c == ASCII_RIGHT)
-		{
-			if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
-				shell->cursorPosition++;
-			else
-				printf(ANSI_CURSOR_LEFT); // stop cursor from escaping
-			
-			continue;
+			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_UP) ||c == String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_DOWN))
+				continue;
+
+			if (c == String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT))
+			{
+				if (shell->cursorPosition > 0)
+					shell->cursorPosition--;
+				
+				continue;
+			}
+
+			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_RIGHT))
+			{
+				if (shell->cursorPosition < String_GetLength(shell->inputBuffer))
+					shell->cursorPosition++;
+				
+				continue;
+			}
+
+			assert(false) // we should never get here
 		}
 
 		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
