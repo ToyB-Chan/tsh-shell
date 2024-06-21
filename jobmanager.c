@@ -129,11 +129,9 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 			String_AppendChar(job->outBuffer, (char)c);
 		}
 
-		// Write Input (only if its the foreground job)
-		if (job == shell->foregroundJob)
+		// Write Input 
 		{
 			int bytesWritten = write(job->inPipe[1], job->inBuffer, String_GetLength(job->inBuffer));
-
 			if (bytesWritten > 0)
 				String_Reset(job->inBuffer);
 		}

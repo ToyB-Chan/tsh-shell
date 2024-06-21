@@ -175,6 +175,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 
 			String_AppendChar(shell->foregroundJob->inBuffer, '\n');
 			String_Reset(shell->inputBuffer);
+			printf("Wrote!\n");
 		}
 
 		return;
