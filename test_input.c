@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 	printf("I want some input: ");
 	fflush(stdout);
 
-	char buffer[16];
+	char buffer[1024];
 	int i = 0;
 	for (; i < sizeof(buffer) - 1; i++)
 	{
