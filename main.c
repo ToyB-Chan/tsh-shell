@@ -37,5 +37,6 @@ int main()
 			break;
 	}
 	
-	ShellInfo_Destroy();
+	ShellInfo_Destroy(shell);
+	shell = NULL;
 }
