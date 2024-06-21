@@ -1,7 +1,6 @@
 #include "shell.h"
 #include "string.h"
 #include "jobmanager.h"
-#include "builtincommands.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -9,6 +8,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <signal.h>
 
 #define ANSI_RESET_LINE "\033[2K\r"
 #define ANSI_MOVE_UP "\033[A"
@@ -179,10 +179,10 @@ void ShellInfo_Tick(ShellInfo* shell)
 		ListString* params = String_Split(shell->inputBuffer, ' ');
 		String_Reset(shell->inputBuffer);
 
-		bool success = ExecuteBuiltinCommand(shell, params);
+		bool success = ShellInfo_ExecuteBuiltinCommand(shell, params);
 
 		if (!success)
-			ExecuteFile(shell, params);
+			ShellInfo_ExecuteFile(shell, params);
 
 		for (size_t i = 0; i < params->numElements; i++)
 			String_Destroy(ListString_Get(params, i));
@@ -194,7 +194,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 {
 	assert(shell);
 	assert(outCommandReady);
-	
+
 	while(1)
 	{
 		int c = getc(stdin);
@@ -220,4 +220,260 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 
 		String_AppendChar(shell->inputBuffer, (char)c);
 	}
+}
+
+bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
+{
+	assert(shell);
+	assert(params && params->numElements > 0);
+	String* cmd = ListString_Remove(params, 0);
+
+	if (String_EqualsCString(cmd, ""))
+	{
+		return true;
+	}
+
+	if (String_EqualsCString(cmd, "job"))
+	{
+		ShellInfo_CommandJob(shell, params);
+		return true;
+	}
+	
+	if (String_EqualsCString(cmd, "list"))
+	{
+		ShellInfo_CommandList(shell, params);
+		return true;
+	}
+	
+	if (String_EqualsCString(cmd, "info"))
+	{
+		ShellInfo_CommandInfo(shell, params);
+		return true;
+	}
+	
+	if (String_EqualsCString(cmd, "wait"))
+	{
+		ShellInfo_CommandWait(shell, params);
+		return true;
+	}
+	
+	if (String_EqualsCString(cmd, "kill"))
+	{
+		ShellInfo_CommandKill(shell, params);
+		return true;
+	}
+	 
+	if (String_EqualsCString(cmd, "exit") || String_EqualsCString(cmd, "quit"))
+	{
+		ShellInfo_CommandExit(shell, params);
+		return true;
+	}
+	
+	if (String_EqualsCString(cmd, "cd"))
+	{
+		ShellInfo_CommandCd(shell, params);
+		return true;
+	}
+
+	if (String_EqualsCString(cmd, "pwd"))
+	{
+		ShellInfo_CommandPwd(shell, params);
+		return true;
+	}
+
+	if (String_EqualsCString(cmd, "clear"))
+	{
+		ShellInfo_CommandClear(shell, params);
+		return true;
+	}
+
+	ListString_Insert(params, cmd, 0);
+	return false;
+}
+
+void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
+{
+	assert(shell);
+	assert(shell->foregroundJob == NULL);
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no executable given",);
+
+	String* orgPath = ListString_Remove(params, 0);
+	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
+	String_Destroy(orgPath);
+
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, resolvedPath), "executable does not exist",);
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
+	ListString_Insert(params, resolvedPath, 0);
+
+	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
+	shell->foregroundJob = job;
+	JobInfo_Execute(job, shell);
+}
+
+void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
+{
+	assert(shell);
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job executable given",);
+
+	String* orgPath = ListString_Remove(params, 0);
+	String* resolvedPath = ShellInfo_ResolvePath(shell, orgPath);
+	String_Destroy(orgPath);
+
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, resolvedPath), "executable does not exist",);
+	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
+	ListString_Insert(params, resolvedPath, 0);
+
+	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
+	JobInfo_Execute(job, shell);
+	printf("[created job with id %li]\n", job->id);
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandList(ShellInfo* shell, ListString* params)
+{
+	assert(shell);
+	String* str = String_New();
+	for (size_t i = 0; i < shell->jobManager->jobs->numElements; i++)
+	{
+		String* jobStr = JobInfo_ToInfoString(ListJobInfo_Get(shell->jobManager->jobs, i));
+		String_AppendString(str, jobStr);
+		String_AppendChar(str, '\n');
+		String_Destroy(jobStr);
+	}
+
+	printf("%s\n", String_GetCString(str));
+	String_Destroy(str);
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandInfo(ShellInfo* shell, ListString* params)
+{
+	assert(shell);
+	assert(params);
+
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
+
+	int id = -1;
+	CHECK_PRINT_ERROR_RETURN(String_Atoi(ListString_Get(params, 0), &id), "job id parameter is not a number",);
+
+	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
+	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
+
+	String* str = JobInfo_ToInfoString(job);
+	printf("%s\n", String_GetCString(str));
+	String_Destroy(str);
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandWait(ShellInfo* shell, ListString* params)
+{
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
+
+	int id = -1;
+	CHECK_PRINT_ERROR_RETURN(String_Atoi(ListString_Get(params, 0), &id), "job id parameter is not a number",);
+
+	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
+	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
+
+	CHECK_PRINT_ERROR_RETURN(job->status <= JS_Running, "job already finished execution",);
+
+	shell->waitForJob = job;
+	printf("[waiting for job %li]\n", job->id);
+}
+
+void ShellInfo_CommandKill(ShellInfo* shell, ListString* params)
+{
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no job id parameter given",);
+
+	int id = -1;
+	CHECK_PRINT_ERROR_RETURN(String_Atoi(ListString_Get(params, 0), &id), "job id parameter is not a number",);
+
+	JobInfo* job = JobManager_FindJobById(shell->jobManager, id);
+	CHECK_PRINT_ERROR_RETURN(job, "invalid job id",);
+
+	CHECK_PRINT_ERROR_RETURN(job->status == JS_Running, "job not running",);
+
+	job->status = JS_Killed;
+	kill(job->pid, SIGKILL);
+	printf("[killed job %li]\n", job->id);
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandExit(ShellInfo* shell, ListString* params)
+{
+	shell->exitRequested = true;
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandCd(ShellInfo* shell, ListString* params)
+{
+	CHECK_PRINT_ERROR_RETURN(params->numElements > 0, "no directory given",);
+
+	String* path = ListString_Get(params, 0);
+	if (String_GetCharAt(path, 0) == '/')
+	{
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsDirectory(shell, path), "directory does not exist",);
+		String_Destroy(shell->directory);
+		shell->directory = String_Copy(path);
+		PRINT_SUCCESS();
+		return;
+	}
+
+	String* newPath = String_Copy(shell->directory);
+	ListString* pathParts = String_Split(path, '/');
+	for (size_t i = 0; i < pathParts->numElements; i++)
+	{
+		if (String_EqualsCString(ListString_Get(pathParts, i), "."))
+			continue;
+
+		if (String_EqualsCString(ListString_Get(pathParts, i), ".."))
+		{
+			while(1)
+			{
+				if (String_EqualsCString(newPath, "/"))
+					break;
+
+				String_RemoveAt(newPath, String_GetLength(newPath) - 1);
+				if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
+					break;
+			}
+
+			continue;
+		}
+
+		if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) != '/')
+			String_AppendChar(newPath, '/');
+		
+		String_AppendCString(newPath, String_GetCString(ListString_Get(pathParts, i)));
+	}
+
+	for (size_t i = 0; i < pathParts->numElements; i++)
+		String_Destroy(ListString_Get(pathParts, i));
+	ListString_Destroy(pathParts);
+
+	if (String_GetCharAt(newPath, String_GetLength(newPath) - 1) == '/')
+		String_RemoveAt(newPath, String_GetLength(newPath) - 1);
+
+	if (!ShellInfo_IsDirectory(shell, newPath))
+	{
+		CHECK_PRINT_ERROR(false, "directory does not exist");
+		String_Destroy(newPath);
+		return;
+	}
+
+	String_Destroy(shell->directory);
+	shell->directory = newPath;
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandPwd(ShellInfo* shell, ListString* params)
+{
+	printf("%s\n", String_GetCString(shell->directory));
+	PRINT_SUCCESS();
+}
+
+void ShellInfo_CommandClear(ShellInfo* shell, ListString* params)
+{
+	printf("\033[2J\033[H");
+	PRINT_SUCCESS();
 }

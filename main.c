@@ -6,7 +6,7 @@
 
 int main()
 {
-	// Set the input stream to no blocking
+	// Set the input stream to non-blocking
 	{
 		int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
 		assert(flags >= 0);
@@ -20,7 +20,7 @@ int main()
 	{
 		int ret;
 		struct termios term;
-		
+
 		ret = tcgetattr(STDIN_FILENO, &term);
 		assert(ret == 0);
 

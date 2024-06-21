@@ -35,3 +35,17 @@ bool ShellInfo_IsDirectory(ShellInfo* shell, String* path);
 String* ShellInfo_ResolvePath(ShellInfo* shell, String* path);
 void ShellInfo_Tick(ShellInfo* shell);
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady);
+
+bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params);
+void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params);
+
+void ShellInfo_CommandJob(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandList(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandInfo(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandWait(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandKill(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandExit(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandCd(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandPwd(ShellInfo* shell, ListString* params);
+void ShellInfo_CommandClear(ShellInfo* shell, ListString* params);
+
