@@ -47,12 +47,12 @@ typedef struct JobManager
 
 JobManager* JobManager_New();
 void JobManager_Destroy(JobManager* manager);
-JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params, FILE* inFile, FILE* outFile);
+JobInfo* JobManager_CreateJob(JobManager* manager, ListString* params);
 void JobManager_DestroyJob(JobManager* manager, JobInfo* job);
 JobInfo* JobManager_FindJobById(JobManager* manager, size_t jobId);
 void JobManager_Tick(JobManager* manager, ShellInfo* shell);
 
-void JobInfo_Execute(JobInfo* job, ShellInfo* shell);
+void JobInfo_Execute(JobInfo* job, ShellInfo* shell, FILE* inFile, FILE* outFile);
 String* JobInfo_ToInfoString(JobInfo* job);
 void JobInfo_Cleanup(JobInfo* job);
 int JobInfo_GetExitCode(JobInfo* job);

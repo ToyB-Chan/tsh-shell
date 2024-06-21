@@ -180,7 +180,6 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell, FILE* inFile, FILE* outFile
 		assert(ret >= 0);
 	}
 
-	job->inBuffer = String_New();
 	job->outBuffer = String_New();
 
 	pid_t cpid = fork();
@@ -308,15 +307,7 @@ void JobInfo_Cleanup(JobInfo* job)
 	close(job->inPipe[1]);
 	close(job->outPipe[0]);;
 
-	if (job->inFile)
-		fclose(job->inFile);
-
-	if (job->outFile)
-		fclose(job->outFile);
-
-	String_Destroy(job->inBuffer);
 	String_Destroy(job->outBuffer);
-
 	job->needsCleanup = false;
 }
 

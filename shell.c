@@ -308,9 +308,9 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
 	ListString_Insert(params, resolvedPath, 0);
 
-	JobInfo* job = JobManager_CreateJob(shell->jobManager, params, NULL, NULL);
+	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
 	shell->foregroundJob = job;
-	JobInfo_Execute(job, shell);
+	JobInfo_Execute(job, shell, NULL, NULL);
 }
 
 void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
@@ -326,8 +326,8 @@ void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
 	ListString_Insert(params, resolvedPath, 0);
 
-	JobInfo* job = JobManager_CreateJob(shell->jobManager, params, NULL, NULL);
-	JobInfo_Execute(job, shell);
+	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
+	JobInfo_Execute(job, shell, NULL, NULL);
 	printf("[created job with id %li]\n", job->id);
 	PRINT_SUCCESS();
 }
