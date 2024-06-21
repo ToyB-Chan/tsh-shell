@@ -275,6 +275,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 				{
 					shell->cursorPosition--;
 					printf(ANSI_MOVE_CURSOR_LEFT);
+					fflush(stdout);
 				}
 				
 				continue;
@@ -286,6 +287,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 				{
 					shell->cursorPosition++;
 					printf(ANSI_MOVE_CURSOR_RIGHT);
+					fflush(stdout);
 				}
 				
 				continue;
