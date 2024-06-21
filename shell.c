@@ -293,7 +293,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 #endif
 		}
 
-		String_InsertChar(shell->inputBuffer, (char)c, shell->cursorPosition);
+		String_AppendChar(shell->inputBuffer, (char)c);
 		shell->cursorPosition++;
 	}
 }
