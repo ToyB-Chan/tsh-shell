@@ -220,8 +220,8 @@ void ShellInfo_Tick(ShellInfo* shell)
 
 	if (g_abortRequested)
 	{
-		printf("[nothing to abort]\n");
 		g_abortRequested = false;
+		shell->exitRequested = true;
 	}
 }
 
