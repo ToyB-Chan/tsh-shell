@@ -148,7 +148,7 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		int ret = poll(&inPipePollFd, 1, 0);
 		assert(ret >= 0);
 
-		if ((inPipePollFd.revets & POLLOUT) != 0)
+		if ((inPipePollFd.revents & POLLOUT) != 0)
 		{
 			if (job->notifiedInputAwaitet == false)
 			{
