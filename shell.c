@@ -472,7 +472,7 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	if (inPath)
 	{
 		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
-		inFile = fopen(inPath, "r");
+		inFile = fopen(String_GetCString(inPath), "r");
 	}
 
 	FILE* outFile = NULL;
@@ -482,7 +482,7 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	if (outPath)
 	{
 		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
-		outFile = fopen(outPath, "r");
+		outFile = fopen(String_GetCString(outPath), "r");
 	}
 
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
