@@ -47,9 +47,9 @@ bool ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
 		return true;
 	}
 	 
-	if (String_EqualsCString(cmd, "quit"))
+	if (String_EqualsCString(cmd, "exit") || String_EqualsCString(cmd, "quit"))
 	{
-		CommandQuit(shell, params);
+		CommandExit(shell, params);
 		return true;
 	}
 	
@@ -164,16 +164,9 @@ void CommandKill(ShellInfo* shell, ListString* params)
 	PRINT_SUCCESS();
 }
 
-void CommandQuit(ShellInfo* shell, ListString* params)
+void CommandExit(ShellInfo* shell, ListString* params)
 {
-	for (size_t i = 0; i < shell->jobManager->jobs->numElements; i++)
-	{
-		JobInfo* job = ListJobInfo_Get(shell->jobManager->jobs, i);
-		job->status = JS_Killed;
-		kill(job->pid, SIGKILL);
-	}
-
-	exit(0);
+	shell->exitRequested = true;
 }
 
 void CommandCd(ShellInfo* shell, ListString* params)

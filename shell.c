@@ -24,6 +24,7 @@ ShellInfo* ShellInfo_New()
 	shell->inputBuffer = String_New();
 	shell->waitForJob = NULL;
 	shell->foregroundJob = NULL;
+	shell->exitRequested = false;
 
 	char* buffer = NULL;
 	size_t bufferSize = 1024;
@@ -130,6 +131,9 @@ String* ShellInfo_ResolvePath(ShellInfo* shell, String* path)
 
 void ShellInfo_Tick(ShellInfo* shell)
 {
+	assert(shell);
+	assert(!shell->exitRequested);
+
 	printf(ANSI_RESET_LINE); // Remove the shell prompt so jobs can print cleanly
 	JobManager_Tick(shell->jobManager, shell);
 
@@ -188,6 +192,9 @@ void ShellInfo_Tick(ShellInfo* shell)
 
 void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 {
+	assert(shell);
+	assert(outCommandReady);
+	
 	while(1)
 	{
 		int c = getc(stdin);

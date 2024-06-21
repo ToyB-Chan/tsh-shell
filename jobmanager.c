@@ -20,7 +20,17 @@ JobManager* JobManager_New()
 void JobManager_Destroy(JobManager* manager)
 {
 	assert(manager);
-	assert(manager->jobs->numElements == 0);
+	
+	for (size_t i = 0; i < manager->jobs->numElements; i++)
+	{
+		JobInfo* job = ListJobInfo_Get(manager->jobs, i);
+		job->status = JS_Killed;
+		kill(job->pid, SIGKILL);
+
+		JobInfo_Cleanup(job);
+		JobManager_DestroyJob(manager, job);
+	}
+
 	ListJobInfo_Destroy(manager->jobs);
 	free(manager);
 }
@@ -55,7 +65,7 @@ void JobManager_DestroyJob(JobManager* manager, JobInfo* job)
 {
 	assert(manager);
 	assert(job);
-	assert(job->status != JS_Running);
+	assert(job->status >= JS_Finished);
 	assert(!job->needsCleanup);
 
 	size_t index = ListJobInfo_Find(manager->jobs, job);

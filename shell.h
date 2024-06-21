@@ -22,6 +22,7 @@ typedef struct ShellInfo
 
 	JobInfo* waitForJob;
 	JobInfo* foregroundJob;
+	bool exitRequested;
 } ShellInfo;
 
 
