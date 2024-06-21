@@ -168,8 +168,11 @@ void ShellInfo_Tick(ShellInfo* shell)
 		}
 		else
 		{
-			String_Destroy(shell->foregroundJob->inBuffer);
-			shell->foregroundJob->inBuffer = String_Copy(shell->inputBuffer);
+			for (size_t i = 0; i < shell->inputBuffer; i++)
+			{
+				String_AppendChar(shell->foregroundJob->inBuffer, String_GetCharAt(shell->inputBuffer, i));
+			}
+			
 			if (commandReady)
 				String_AppendChar(shell->foregroundJob->inBuffer, '\n');
 		}
