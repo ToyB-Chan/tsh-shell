@@ -476,8 +476,8 @@ void ShellInfo_CommandPwd(ShellInfo* shell, ListString* params)
 
 void ShellInfo_CommandClear(ShellInfo* shell, ListString* params)
 {
-	printf(ANSI_CLEAR_SCREEN)
-	printf(ANSI_RESET_CURSOR)
+	printf(ANSI_CLEAR_SCREEN);
+	printf(ANSI_RESET_CURSOR);
 	fflush(stdout);
 	PRINT_SUCCESS();
 }

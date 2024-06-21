@@ -25,7 +25,7 @@ void JobManager_Destroy(JobManager* manager)
 	{
 		JobInfo* job = ListJobInfo_Get(manager->jobs, i);
 
-		if (job->status <= JS_Running);
+		if (job->status <= JS_Running)
 		{
 			job->status = JS_Killed;
 			kill(job->pid, SIGKILL);
