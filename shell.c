@@ -475,6 +475,29 @@ void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
 	ListString_Insert(params, resolvedPath, 0);
 
+
+	bool invalidInput;
+
+	FILE* inFile = NULL;
+	invalidInput = false;
+	String* inPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe in",);
+	if (inPath)
+	{
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
+		inFile = fopen(String_GetCString(inPath), "r");
+	}
+
+	FILE* outFile = NULL;
+	invalidInput = false;
+	String* outPath = ShellInfo_ExtractOutFilePath(shell, params, &invalidInput);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
+	if (outPath)
+	{
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
+		outFile = fopen(String_GetCString(outPath), "w");
+	}
+
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
 	JobInfo_Execute(job, shell, NULL, NULL);
 	printf("[created job with id %li]\n", job->id);
