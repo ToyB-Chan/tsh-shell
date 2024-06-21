@@ -1,10 +1,8 @@
 #pragma once
 
 #include <signal.h>
+#include <stdbool.h>
 
-bool g_abortRequested = false;
+extern bool g_abortRequested;
 
-void SignalHandlerAbort(int signal)
-{
-	g_abortRequested = true;
-}
+void SignalHandlerAbort(int signal);
