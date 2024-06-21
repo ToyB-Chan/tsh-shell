@@ -6,8 +6,17 @@ int main(int argc, char** argv)
 	printf("I want some input: \n");
 
 	char buffer[1024];
-	fread(buffer, sizeof(char), sizeof(buffer) - 1, stdin);
-	buffer[sizeof(buffer) - 1] = '\0';
+	int i = 0;
+	for (; i < sizeof(buffer) - 1; i++)
+	{
+		int c = getc(stdin);
+		if (c == EOF || c == '\n')
+			break;
+
+		buffer[i] = (char)c;
+	}
+
+	buffer[i + 1] = '\0';
 
 	printf("Your input was: %s\n", buffer);
 	printf("Bye!\n");
