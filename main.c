@@ -33,7 +33,7 @@ int main()
 	}
 
 	ShellInfo* shell = ShellInfo_New();
-	signal(SIGABRT, SignalHandlerAbort)
+	signal(SIGABRT, SignalHandlerAbort);
 
 	while(true)
 	{
