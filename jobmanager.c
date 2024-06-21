@@ -133,7 +133,10 @@ void JobManager_Tick(JobManager* manager, ShellInfo* shell)
 		{
 			int bytesWritten = write(job->inPipe[1], job->inBuffer, String_GetLength(job->inBuffer));
 			if (bytesWritten > 0)
+			{
 				String_Reset(job->inBuffer);
+				printf("Really wrote them!\n");
+			}
 		}
 
 		pid_t tpid = waitpid(job->pid, &job->exitStatus, WNOHANG);
