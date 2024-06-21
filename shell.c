@@ -168,7 +168,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 		}
 		else if(commandReady)
 		{
-			for (size_t i = 0; i < shell->inputBuffer; i++)
+			for (size_t i = 0; i < String_GetLength(shell->inputBuffer); i++)
 			{
 				String_AppendChar(shell->foregroundJob->inBuffer, String_GetCharAt(shell->inputBuffer, i));
 			}
