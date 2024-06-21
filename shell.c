@@ -466,6 +466,7 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 
 	bool invalidInput;
 	FILE* inFile = NULL;
+	/*
 	invalidInput = false;
 	String* inPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
 	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe in",);
@@ -474,8 +475,11 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
 		inFile = fopen(inPath, "r");
 	}
+	*/
 
 	FILE* outFile = NULL;
+	
+	/*
 	invalidInput = false;
 	String* outPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
 	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
@@ -484,6 +488,7 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
 		outFile = fopen(outPath, "r");
 	}
+	*/
 
 
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
