@@ -178,7 +178,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 	{
 		// Draw our input string
 		printf("%s", String_GetCString(shell->inputBuffer));
-		ShellInfo_PrintCursorOffset(shell);
+		//ShellInfo_PrintCursorOffset(shell);
 		fflush(stdout);
 
 		if (shell->foregroundJob->status >= JS_Finished)
@@ -208,7 +208,7 @@ void ShellInfo_Tick(ShellInfo* shell)
 
 	// Redraw the promt
 	printf("tsh@%s> %s", String_GetCString(shell->directory), String_GetCString(shell->inputBuffer));
-	ShellInfo_PrintCursorOffset(shell);
+	//ShellInfo_PrintCursorOffset(shell);
 	fflush(stdout);
 
 	// User commited the command via newline, execute it
