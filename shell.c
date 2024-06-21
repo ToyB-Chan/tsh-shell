@@ -90,7 +90,7 @@ bool ShellInfo_IsDirectory(ShellInfo* shell, String* path)
 	return S_ISDIR(info.st_mode);
 }
 
-String* ShellInfo_ResolvePath(ShellInfo* shell, String* path,, bool resolveEnvVar)
+String* ShellInfo_ResolvePath(ShellInfo* shell, String* path, bool resolveEnvVar)
 {
 	assert(shell);
 	assert(path);
