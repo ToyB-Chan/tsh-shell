@@ -229,7 +229,7 @@ void JobInfo_Execute(JobInfo* job, ShellInfo* shell, FILE* inFile, FILE* outFile
 		chdir(String_GetCString(shell->directory));
 		execvp(String_GetCString(filePath), argv);
 
-		setsid(); // new process group to make it not receive signals intially directed to the main process
+		setpgid(0, 0); // new process group to make it not receive signals intially directed to the main process
 
 		exit(EXIT_STATUS_COMMAND_NOT_FOUND);
 	}
