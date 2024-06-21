@@ -306,7 +306,76 @@ void ShellInfo_PrintCursorOffset(ShellInfo* shell)
 		printf(ANSI_MOVE_CURSOR_LEFT);
 }
 
-bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params)
+String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput)
+{
+	String* path = NULL;
+	size_t index = 0; 
+	for (size_t i = 0; i < params->numElements; i++)
+	{
+		String* current = ListString_Get(params, i);
+		if (String_EqualsCString(current, "<"))
+		{
+			if (i + 1 >= params->numElements())
+			{
+				*outInvalidInput = true;
+				return NULL;
+			}
+
+			path = ListString_Get(params, i + 1);
+			index = i;
+			break;
+		}
+	}
+
+	*outInvalidInput = false;
+
+	if (path)
+	{
+		String* realPath = ShellInfo_ResolvePath(shell, path;);
+		String_Destroy(ListString_Remove(params, index)); // remove pipe symbol
+		String_Destroy(ListString_Remove(params, index)); // remove path
+		return realPath;
+	}
+
+	return NULL;
+}
+
+String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool* outInvalidInput)
+{
+	String* path = NULL;
+	size_t index = 0; 
+	for (size_t i = 0; i < params->numElements; i++)
+	{
+		String* current = ListString_Get(params, i);
+		if (String_EqualsCString(current, ">"))
+		{
+			if (i + 1 >= params->numElements())
+			{
+				*outInvalidInput = true;
+				return NULL;
+			}
+
+			path = ListString_Get(params, i + 1);
+			index = i;
+			break;
+		}
+	}
+
+	*outInvalidInput = false;
+
+	if (path)
+	{
+		String* realPath = ShellInfo_ResolvePath(shell, path;);
+		String_Destroy(ListString_Remove(params, index)); // remove pipe symbol
+		String_Destroy(ListString_Remove(params, index)); // remove path
+		return realPath;
+	}
+
+	return NULL;
+}
+
+
+bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params, bool* outInvalidInput))
 {
 	assert(shell);
 	assert(params && params->numElements > 0);
@@ -395,9 +464,31 @@ void ShellInfo_ExecuteFile(ShellInfo* shell, ListString* params)
 	CHECK_PRINT_ERROR_RETURN(ShellInfo_IsExecutable(shell, resolvedPath), "file is not an executable",);
 	ListString_Insert(params, resolvedPath, 0);
 
+	bool invalidInput;
+	FILE* inFile = NULL;
+	invalidInput = false;
+	String* inPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe in",);
+	if (inPath)
+	{
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, inPath), "file given to pipe in does not exist",);
+		inFile = fopen(inPath, "r");
+	}
+
+	FILE* outFile = NULL;
+	invalidInput = false;
+	String* outPath = ShellInfo_ExtractInFilePath(shell, params, &invalidInput);
+	CHECK_PRINT_ERROR_RETURN(!invalidInput, "no file given to pipe out",);
+	if (outPath)
+	{
+		CHECK_PRINT_ERROR_RETURN(ShellInfo_IsFile(shell, outPath), "file given to pipe in does not exist",);
+		outFile = fopen(outPath, "r");
+	}
+
+
 	JobInfo* job = JobManager_CreateJob(shell->jobManager, params);
 	shell->foregroundJob = job;
-	JobInfo_Execute(job, shell, NULL, NULL);
+	JobInfo_Execute(job, shell, inFile, outFile);
 }
 
 void ShellInfo_CommandJob(ShellInfo* shell, ListString* params)
