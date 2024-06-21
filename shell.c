@@ -375,7 +375,7 @@ String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool*
 }
 */
 
-bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params, bool* outInvalidInput))
+bool ShellInfo_ExecuteBuiltinCommand(ShellInfo* shell, ListString* params, bool* outInvalidInput)
 {
 	assert(shell);
 	assert(params && params->numElements > 0);
