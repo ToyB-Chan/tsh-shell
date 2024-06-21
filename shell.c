@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-#define ANSI_ESCAPE_CODE "\033"
+#define ANSI_ESCAPE_CODE '\033'
 
 #define ANSI_RESET_LINE "\033[2K\r"
 #define ANSI_CLEAR_SCREEN "\033[2J"
