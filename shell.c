@@ -256,8 +256,8 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 
 		if (c == ASCII_BACKSPACE || c == ASCII_DELETE)
 		{
-			if (shell->cursorPosition > 0)
-				String_RemoveAt(shell->inputBuffer, shell->cursorPosition - 2);
+			if (String_GetLength(shell->inputBuffer) > 0)
+				String_RemoveAt(shell->inputBuffer, String_GetLength(shell->inputBuffer) - 1);
 			continue;
 		}
 
@@ -271,6 +271,7 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_UP) || String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_DOWN))
 				continue;
 
+# if 0
 			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT))
 			{
 				if (shell->cursorPosition > 0)
@@ -286,6 +287,10 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 				
 				continue;
 			}
+#else
+			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT) || String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_RIGHT))
+				continue;
+#endif
 
 			assert(false); // we should never get here
 		}
