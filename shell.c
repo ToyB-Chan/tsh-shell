@@ -165,16 +165,16 @@ void ShellInfo_Tick(ShellInfo* shell)
 			JobManager_DestroyJob(shell->jobManager, shell->foregroundJob);
 			shell->foregroundJob = NULL;
 			shell->jobManager->nextJobId--;
-			String_Reset(shell->inputBuffer);
 		}
 		else
 		{
 			String_Destroy(shell->foregroundJob->inBuffer);
 			shell->foregroundJob->inBuffer = String_Copy(shell->inputBuffer);
-			if (commandReady)
-				String_AppendChar(shell->foregroundJob->inBuffer, '\n');
+			if (commandReady);
+				String_AppendChar(shell->foregroundJob->inBuffer, '\n')
 		}
 
+		String_Reset(shell->inputBuffer);
 		return;
 	}
 
