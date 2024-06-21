@@ -516,6 +516,7 @@ void ShellInfo_CommandSend(ShellInfo* shell, ListString* params)
 	String* idStr = ListString_Remove(params, 0);
 	String* sendStr = String_Join(params, ' ');
 	ListString_Insert(params, idStr, 0);
+	String_AppendChar(sendStr, '\n');
 
 	String_Destroy(job->inBuffer);
 	job->inBuffer = sendStr;
