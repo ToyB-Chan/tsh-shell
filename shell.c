@@ -315,7 +315,7 @@ String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* 
 		String* current = ListString_Get(params, i);
 		if (String_EqualsCString(current, "<"))
 		{
-			if (i + 1 >= params->numElements())
+			if (i + 1 >= params->numElements)
 			{
 				*outInvalidInput = true;
 				return NULL;
@@ -349,7 +349,7 @@ String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool*
 		String* current = ListString_Get(params, i);
 		if (String_EqualsCString(current, ">"))
 		{
-			if (i + 1 >= params->numElements())
+			if (i + 1 >= params->numElements)
 			{
 				*outInvalidInput = true;
 				return NULL;
