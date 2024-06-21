@@ -50,8 +50,6 @@ ShellInfo* ShellInfo_New()
 	free(buffer);
 
 	signal(SIGINT, SignalHandlerAbort);
-	assert(ret >= 0);
-
 	return shell;
 }
 
