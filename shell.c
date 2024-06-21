@@ -167,6 +167,13 @@ void ShellInfo_Tick(ShellInfo* shell)
 			shell->jobManager->nextJobId--;
 			String_Reset(shell->inputBuffer);
 		}
+		else
+		{
+			String_Destroy(shell->foregroundJob->inBuffer);
+			shell->foregroundJob->inBuffer = String_Copy(shell->inputBuffer);
+			if (commandReady)
+				String_AppendChar(shell->foregroundJob->inBuffer, '\n');
+		}
 
 		return;
 	}

@@ -30,6 +30,7 @@ typedef struct JobInfo
 	int inPipe[2];
 	int outPipe[2];
 
+	String* inBuffer;
 	String* outBuffer;
 	
 	int exitStatus;
