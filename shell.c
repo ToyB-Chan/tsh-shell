@@ -331,7 +331,7 @@ String* ShellInfo_ExtractInFilePath(ShellInfo* shell, ListString* params, bool* 
 
 	if (path)
 	{
-		String* realPath = ShellInfo_ResolvePath(shell, path;);
+		String* realPath = ShellInfo_ResolvePath(shell, path);
 		String_Destroy(ListString_Remove(params, index)); // remove pipe symbol
 		String_Destroy(ListString_Remove(params, index)); // remove path
 		return realPath;
@@ -365,7 +365,7 @@ String* ShellInfo_ExtractOutFilePath(ShellInfo* shell, ListString* params, bool*
 
 	if (path)
 	{
-		String* realPath = ShellInfo_ResolvePath(shell, path;);
+		String* realPath = ShellInfo_ResolvePath(shell, path);
 		String_Destroy(ListString_Remove(params, index)); // remove pipe symbol
 		String_Destroy(ListString_Remove(params, index)); // remove path
 		return realPath;
