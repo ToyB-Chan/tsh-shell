@@ -266,10 +266,10 @@ void ShellInfo_UpdateInputBuffer(ShellInfo* shell, bool* outCommandReady)
 			String_AppendChar(ansiSeqeunce, (char)getc(stdin));
 			String_AppendChar(ansiSeqeunce, (char)getc(stdin));
 
-			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_UP) ||c == String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_DOWN))
+			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_UP) || String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_DOWN))
 				continue;
 
-			if (c == String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT))
+			if (String_EqualsCString(ansiSeqeunce, ANSI_MOVE_CURSOR_LEFT))
 			{
 				if (shell->cursorPosition > 0)
 					shell->cursorPosition--;
